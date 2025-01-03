@@ -1,0 +1,64 @@
+
+.codegpt
+# Logs
+logs
+*.log
+npm-debug.log*
+yarn-debug.log*
+yarn-error.log*
+pnpm-debug.log*
+lerna-debug.log*
+
+# Frontend specific
+skincare_clinic-frontend/node_modules
+skincare_clinic-frontend/.DS_Store
+skincare_clinic-frontend/dist
+skincare_clinic-frontend/dist-ssr
+skincare_clinic-frontend/coverage
+skincare_clinic-frontend/*.local
+
+skincare_clinic-frontend/cypress/videos/
+skincare_clinic-frontend/cypress/screenshots/
+
+# Backend specific
+# Python cache files
+**/__pycache__/
+**/*.pyc
+**/*.pyo
+**/*.pyd
+.Python
+*.py[cod]
+*$py.class
+__pycache__/
+
+skincareclinic_backend/media/
+skincareclinic_backend/db.sqlite3
+
+# Virtual environment
+skincareclinic_backend/myenv/
+myenv/
+venv/
+ENV/
+
+# Environment variables
+skincareclinic_backend/.env
+.env
+
+# Editor directories and files
+.vscode/*
+!.vscode/extensions.json
+.idea
+*.suo
+*.ntvs*
+*.njsproj
+*.sln
+*.sw?
+
+# TypeScript
+*.tsbuildinfo
+
+# General
+.DS_Store
+
+
+
