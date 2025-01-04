@@ -62,8 +62,8 @@ def get_brand(request):
 def get_filtered_products(request):
     category = request.GET.get('category')
     brand = request.GET.get('brand')
-    min_price = request.GET.get('min_price')
-    max_price = request.GET.get('max_price')
+    min_price = request.GET.get('minPrice')
+    max_price = request.GET.get('maxPrice')
     print(category)
     
     products = Product.objects.all()

@@ -18,9 +18,9 @@
               <option v-for="category in categories" :key="category.id" :value="category.slug">{{ category.name }}</option>
             </select>
             <div class="flex items-center space-x-2">
-              <input v-model="filters.minPrice" type="number" placeholder="Min Price" class="w-24 px-2 py-2 border border-gray-200 rounded-lg text-gray-600 focus:outline-none focus:border-[#2E8B57]" />
+              <input v-model.number="filters.minPrice" type="number" placeholder="Min Price" class="w-24 px-2 py-2 border border-gray-200 rounded-lg text-gray-600 focus:outline-none focus:border-[#2E8B57]" />
               <span>-</span>
-              <input v-model="filters.maxPrice" type="number" placeholder="Max Price" class="w-24 px-2 py-2 border border-gray-200 rounded-lg text-gray-600 focus:outline-none focus:border-[#2E8B57]" />
+              <input v-model.number="filters.maxPrice" type="number" placeholder="Max Price" class="w-24 px-2 py-2 border border-gray-200 rounded-lg text-gray-600 focus:outline-none focus:border-[#2E8B57]" />
             </div>
           </div>
           <select v-model="sortBy" class="px-4 py-2 border border-gray-200 rounded-lg text-gray-600 focus:outline-none focus:border-[#2E8B57]">
@@ -32,8 +32,15 @@
         </div>
       </div>
       <div class="container mx-auto px-4 py-8">
-        <div class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
-          <div v-for="product in products" :key="product.id" class="group">
+        <div v-if="loading" class="text-center py-16">
+          <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-600 mx-auto"></div>
+          <p class="mt-4 text-lg text-gray-600">Loading products...</p>
+        </div>
+        <div v-else-if="error" class="text-center py-16">
+          <p class="text-red-500">{{ error }}</p>
+        </div>
+        <div v-else class="grid grid-cols-2 md:grid-cols-3 lg:grid-cols-4 gap-4 md:gap-6">
+          <div v-for="product in sortedProducts" :key="product.id" class="group">
             <div class="relative overflow-hidden rounded-lg mb-3">
               <img
                 :src="product.get_thumbnail"
@@ -42,16 +49,19 @@
               />
             </div>
             <RouterLink :to="{name:'product-detail', params:{slug:product.slug}}">
-            <h3 v-if="product.brand" class="text-[#2F4F4F] font-semibold mb-1">{{ product.brand.name }}</h3>
-            <p class="text-gray-500 text-sm mb-2">{{ product.name }}</p>
+              <h3 class="text-[#2F4F4F] font-semibold mb-1 h-6">
+                {{ product.brand ? product.brand.name : ' ' }}
+              </h3>
+              <p class="text-gray-500 text-sm mb-2">{{ product.name }}</p>
             </RouterLink>
             <div class="flex items-center justify-between">
-              <span class="text-[#2E8B57] font-bold">${{ product.price }}</span>
-              <button 
-                class="text-sm px-3 py-1 bg-[#2E8B57] text-white rounded-full hover:bg-[#267346] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed"
+              <span class="text-[#2E8B57] font-bold">${{ product.price.toFixed(2) }}</span>
+              <button @click="addToCart(product)" 
+                class="text-sm px-3 py-1 bg-[#2E8B57] text-white rounded-full hover:bg-[#267346] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed md:flex md:items-center md:space-x-1"
                 :disabled="product.stock === 0"
               >
-                {{ product.stock > 0 ? 'Add to Cart' : 'Out of Stock' }}
+                <span class="hidden md:inline">{{ product.stock > 0 ? 'Add to Cart' : 'Out of Stock' }}</span>
+                <ShoppingCartIcon class="h-4 w-4 md:ml-1" />
               </button>
             </div>
             <p class="text-sm text-gray-600 mt-2">
@@ -64,16 +74,19 @@
   </template>
   
   <script>
-  import { Filter, ShoppingBag, Search, Menu } from 'lucide-vue-next'
+  import { useCartStore } from '@/stores/cart';
+  import { useToastStore } from '@/stores/toast';
+  import { Filter, ShoppingBag, Search, Menu, ShoppingCart } from 'lucide-vue-next'
   import axios from 'axios';
   
   export default {
-    name: 'App',
+    name: 'ShopPage',
     components: {
       Filter,
       ShoppingBag,
       Search,
-      Menu
+      Menu,
+      ShoppingCartIcon: ShoppingCart
     },
     data() {
       return {
@@ -83,45 +96,72 @@
         filters: {
           brand: '',
           category: '',
-          minPrice: '',
-          maxPrice: ''
+          minPrice: null,
+          maxPrice: null
         },
-        sortBy: 'featured'
+        sortBy: 'featured',
+        cartStore: useCartStore(),
+        toastStore: useToastStore(),
+        loading: false,
+        error: null
       }
     },
     mounted() {
       this.getProducts()
       this.getBrands()
-      this.getCategory()
+      this.getCategories()
     },
     computed: {
       bannerText() {
         if (this.filters.category && this.filters.brand) {
-          return `${this.filters.brand} - ${this.filters.category}`;
+          const brand = this.brands.find(b => b.slug === this.filters.brand)
+          const category = this.categories.find(c => c.slug === this.filters.category)
+          return `${brand ? brand.name : ''} - ${category ? category.name : ''}`;
         } else if (this.filters.category) {
-          return this.filters.category;
+          const category = this.categories.find(c => c.slug === this.filters.category)
+          return category ? category.name : '';
         } else if (this.filters.brand) {
-          return this.filters.brand;
+          const brand = this.brands.find(b => b.slug === this.filters.brand)
+          return brand ? brand.name : '';
         }
         return '';
+      },
+      sortedProducts() {
+        let sorted = [...this.products];
+        switch (this.sortBy) {
+          case 'priceLowToHigh':
+            sorted.sort((a, b) => a.price - b.price)
+            break
+          case 'priceHighToLow':
+            sorted.sort((a, b) => b.price - a.price)
+            break
+          case 'alphabetical':
+            sorted.sort((a, b) => a.name.localeCompare(b.name))
+            break
+          default:
+            break
+        }
+        return sorted;
       }
     },
     watch: {
-    filters: {
-      handler: 'updateProducts',
-      deep: true
+      filters: {
+        handler: 'updateProducts',
+        deep: true
+      }
     },
-    products: 'applySort',
-    sortBy: 'applySort'
-  },
     methods: {
       async getProducts() {
+        this.loading = true;
+        this.error = null;
         try {
           const response = await axios.get('api/products/')
           this.products = response.data
-          this.applySort()
         } catch (error) {
           console.error(error)
+          this.error = "Failed to load products. Please try again."
+        } finally {
+          this.loading = false;
         }
       },
       async getBrands() {
@@ -132,7 +172,7 @@
           console.error(error)
         }
       },
-      async getCategory() {
+      async getCategories() {
         try {
           const response = await axios.get('api/categories/')
           this.categories = response.data
@@ -141,34 +181,32 @@
         }
       },
       async updateProducts() {
+        this.loading = true;
+        this.error = null;
         try {
-            const response = await axios.get('api/filter_products/', {
-                params: this.filters  
-            })
-          console.log(response.data)
-          console.log(this.filters)
+          const response = await axios.get('api/filter_products/', {
+            params: {
+              ...this.filters,
+              minPrice: this.filters.minPrice || undefined,
+              maxPrice: this.filters.maxPrice || undefined
+            }
+          })
           this.products = response.data
-          this.applySort()
         } catch (error) {
           console.error(error)
+          this.error = "Failed to update products. Please try again."
+        } finally {
+          this.loading = false;
         }
       },
-      applySort() {
-        switch (this.sortBy) {
-          case 'priceLowToHigh':
-            this.products.sort((a, b) => a.price - b.price)
-            break
-          case 'priceHighToLow':
-            this.products.sort((a, b) => b.price - a.price)
-            break
-          case 'alphabetical':
-            this.products.sort((a, b) => a.name.localeCompare(b.name))
-            break
-          default:
-            break
-        }
+      addToCart(product) {
+        this.cartStore.addItem(product);
+        const brandName = product.brand?.name || " "; 
+        const message = `Added ${brandName} ${product.name} to cart`;
+        this.toastStore.showToast(5000, message, "bg-emerald-500");
       }
     }
   }
   </script>
+  
   

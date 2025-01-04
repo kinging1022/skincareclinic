@@ -1,70 +1,71 @@
-
 <template>
   <div class="w-full min-h-screen bg-white">
-  <header>
-    <nav class="bg-white shadow-sm">
-      <!-- Navigation content -->
-      <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-        <div class="flex justify-between h-16 items-center">
-          <div class="flex-shrink-0 flex items-center">
-            <RouterLink to="/"><span class="text-2xl font-bold text-emerald-800">Skincare Clinic</span></RouterLink>
+    <header>
+      <nav class="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+        <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
+          <div class="flex justify-between h-16 items-center">
+            <div class="flex-shrink-0 flex items-center">
+              <RouterLink to="/"><span class="text-2xl font-bold text-emerald-800">Skincare Clinic</span></RouterLink>
+            </div>
+            <div class="hidden md:flex items-center space-x-8">
+              <RouterLink to="/" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Home</RouterLink>
+              <RouterLink to="/shop" class="text-gray-600 hover:text-emerald-700">Shop</RouterLink>
+              <RouterLink to="/track-order" class="text-gray-600 hover:text-emerald-700">Track Order</RouterLink>
+              <a href="#" class="text-gray-600 hover:text-emerald-700">Blog</a>
+            </div>
+            <div class="hidden md:flex items-center space-x-4">
+              <button class="p-2 text-gray-600 hover:text-emerald-700">
+                <search-icon :size="20" />
+              </button>
+              <RouterLink to="/cart" class="p-2 text-gray-600 hover:text-emerald-700 relative">
+                <shopping-cart-icon :size="20" />
+                <span v-if="cartItemCount > 0" class="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  {{ cartItemCount }}
+                </span>
+              </RouterLink>
+            </div>
+            
+            <div class="md:hidden flex items-center space-x-4">
+              <button class="p-2 text-gray-600 hover:text-emerald-700">
+                <search-icon :size="20" />
+              </button>
+              <RouterLink to="/cart" class="p-2 text-gray-600 hover:text-emerald-700 relative">
+                <shopping-cart-icon :size="20" />
+                <span v-if="cartItemCount > 0" class="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
+                  {{ cartItemCount }}
+                </span>
+              </RouterLink>
+              <button @click="toggleMenu" class="p-2 text-gray-600 hover:text-emerald-700">
+                <x-icon v-if="isOpen" :size="24" />
+                <menu-icon v-else :size="24" />
+              </button>
+            </div>
           </div>
-          <div class="hidden md:flex items-center space-x-8">
+        </div>
+        <div v-if="isOpen" class="md:hidden">
+          <div class="px-2 pt-2 pb-3 space-y-1">
             <RouterLink to="/" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Home</RouterLink>
-            <RouterLink to="/shop" class="text-gray-600 hover:text-emerald-700">Shop</RouterLink>
-            <RouterLink to="/track-order" class="text-gray-600 hover:text-emerald-700">Track Order</RouterLink>
-            <a href="#" class="text-gray-600 hover:text-emerald-700">Blog</a>
+            <RouterLink to="/shop" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Shop</RouterLink>
+            <RouterLink  to="/track-order" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Track Order</RouterLink>
+            <a href="#" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Blog</a>
           </div>
-          <div class="hidden md:flex items-center space-x-4">
-            <button class="p-2 text-gray-600 hover:text-emerald-700">
-              <search-icon :size="20" />
-            </button>
-            <RouterLink to="/cart" class="p-2 text-gray-600 hover:text-emerald-700">
-              <shopping-cart-icon :size="20" />
-            </RouterLink>
-          </div>
-          
-        <div class="md:hidden flex items-center space-x-4">
-            <button class="p-2 text-gray-600 hover:text-emerald-700">
-              <search-icon :size="20" />
-            </button>
-            <RouterLink to="/cart" class="p-2 text-gray-600 hover:text-emerald-700">
-              <shopping-cart-icon :size="20" />
-            </RouterLink>
-            <button @click="toggleMenu" class="p-2 text-gray-600 hover:text-emerald-700">
-              <x-icon v-if="isOpen" :size="24" />
-              <menu-icon v-else :size="24" />
-            </button>
         </div>
+      </nav>
 
+      <div class="w-full bg-cover bg-center py-3" :style="announcementStyle">
+        <div class="max-w-7xl mx-auto px-4">
+          <p class="text-center text-white text-sm md:text-base font-medium animate-fade-in">
+            {{ announcements[currentAnnouncement] }}
+          </p>
         </div>
       </div>
-      <div v-if="isOpen" class="md:hidden">
-        <!-- Mobile menu content -->
-        <div class="px-2 pt-2 pb-3 space-y-1">
-          <RouterLink to="/" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Home</RouterLink>
-          <RouterLink to="/shop" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Shop</RouterLink>
-          <RouterLink  to="/track-order" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Track Order</RouterLink>
-          <a href="#" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Blog</a>
-        </div>
-      </div>
-    </nav>
+    </header>
 
-    <div class="w-full bg-cover bg-center py-3" :style="announcementStyle">
-      <div class="max-w-7xl mx-auto px-4">
-        <p class="text-center text-white text-sm md:text-base font-medium animate-fade-in">
-          {{ announcements[currentAnnouncement] }}
-        </p>
-      </div>
-  </div>
-    
-  </header>
-  
+    <RouterView />
 
-  <RouterView />
+    <Toast />
 
-  <footer class="bg-emerald-900 text-white">
-      <!-- Footer content -->
+    <footer class="bg-emerald-900 text-white">
       <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
         <div class="grid grid-cols-1 md:grid-cols-4 gap-8">
           <div>
@@ -110,12 +111,15 @@
         </div>
       </div>
     </footer>
-</div>
+  </div>
 </template>
 
 <script>
 import { RouterLink, RouterView } from 'vue-router'
+import { useCartStore } from './stores/cart';
+import Toast from './components/Toast.vue'
 import { Menu, X, ChevronDown, ShoppingCart, Search, User, Facebook, Twitter, Instagram } from 'lucide-vue-next'
+
 export default {
   name: 'App',
   components: {
@@ -128,19 +132,20 @@ export default {
     FacebookIcon: Facebook,
     TwitterIcon: Twitter,
     InstagramIcon: Instagram,
-    
+    Toast
   },
   data() {
     return {
       isOpen: false,
       openCategory: null,
       currentAnnouncement: 0,
-       announcements : [
-    "Free shipping on orders over $50! 🚚",
-    "New Summer Collection is here! ✨",
-    "Get 20% off on your first purchase! 🎉",
-  ],
-   
+      announcementInterval: null,
+      cartStore : useCartStore(),
+      announcements: [
+        "Free shipping on orders over $50! 🚚",
+        "New Summer Collection is here! ✨",
+        "Get 20% off on your first purchase! 🎉",
+      ],
     }
   },
   computed: {
@@ -150,6 +155,9 @@ export default {
         backgroundColor: "rgba(45, 148, 116, 0.9)",
         backgroundBlendMode: "overlay",
       }
+    },
+    cartItemCount() {
+      return this.cartStore.totalItems;
     }
   },
   methods: {
@@ -157,19 +165,21 @@ export default {
       this.isOpen = !this.isOpen
       console.log(this.isOpen)
     },
-    
   },
-  mounted() {
+  mounted() {      
     // Announcement rotation logic
+    this.announcementInterval = this.cartStore.initializeCart
     setInterval(() => {
       this.currentAnnouncement = (this.currentAnnouncement + 1) % this.announcements.length
     }, 5000)
-  }
+  },
+  beforeUnmount() {
+  clearInterval(this.announcementInterval);
+}
 }
 </script>
 
 <style scoped>
-
+/* Add any scoped styles here if needed */
 </style>
-
 

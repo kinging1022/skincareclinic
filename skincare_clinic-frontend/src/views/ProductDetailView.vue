@@ -6,7 +6,21 @@
           Back to previous page
         </button>
         
-        <div v-if="product" class="bg-white rounded-2xl shadow-lg overflow-hidden">
+        <div v-if="loading" class="text-center py-16">
+          <div class="animate-spin rounded-full h-32 w-32 border-b-2 border-emerald-600 mx-auto"></div>
+          <p class="mt-4 text-lg text-gray-600">Loading product details...</p>
+        </div>
+  
+        <div v-else-if="error" class="text-center py-16">
+          <XCircleIcon class="mx-auto h-16 w-16 text-red-500" />
+          <h2 class="mt-4 text-2xl font-semibold text-gray-900">Error Loading Product</h2>
+          <p class="mt-2 text-gray-600">{{ error }}</p>
+          <button @click="getProduct" class="mt-6 px-6 py-3 bg-emerald-600 text-white rounded-lg hover:bg-emerald-700 transition duration-300 ease-in-out">
+            Try Again
+          </button>
+        </div>
+  
+        <div v-else-if="product" class="bg-white rounded-2xl shadow-lg overflow-hidden">
           <div class="grid grid-cols-1 md:grid-cols-2 gap-8">
             <div class="relative h-96 md:h-full">
               <img class="absolute inset-0 w-full h-full object-cover" :src="product.get_image" :alt="product.name" />
@@ -29,25 +43,24 @@
               <div>
                 <div class="flex items-center mb-6">
                   <button @click="decreaseQuantity" 
-                          class="bg-emerald-100 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-200 h-10 w-10 rounded-l cursor-pointer outline-none">
+                          class="bg-emerald-100 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-200 h-10 w-10 rounded-l cursor-pointer outline-none"
+                          :disabled="cartQuantity <= 1 || !isInCart">
                     <MinusIcon class="h-5 w-5 m-auto" />
                   </button>
-                  <input v-model.number="quantity" 
-                         type="number" 
-                         class="outline-none focus:outline-none text-center w-24 bg-gray-100 font-semibold text-md hover:text-black focus:text-black md:text-base cursor-default flex items-center text-gray-700 outline-none"
-                         :disabled="product.stock === 0"
-                         min="1"
-                         :max="product.stock" />
+                  <div class="outline-none focus:outline-none text-center w-24 bg-gray-100 font-semibold text-md md:text-base flex items-center justify-center text-gray-700">
+                    {{ cartQuantity }}
+                  </div>
                   <button @click="increaseQuantity"
-                          class="bg-emerald-100 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-200 h-10 w-10 rounded-r cursor-pointer">
+                          class="bg-emerald-100 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-200 h-10 w-10 rounded-r cursor-pointer"
+                          :disabled="cartQuantity >= product.stock">
                     <PlusIcon class="h-5 w-5 m-auto" />
                   </button>
                 </div>
                 <button @click="addToCart"
                         class="w-full bg-emerald-600 text-white py-3 px-6 rounded-lg hover:bg-emerald-700 transition duration-300 ease-in-out flex items-center justify-center"
-                        :disabled="product.stock === 0 || quantity < 1">
+                        :disabled="product.stock === 0">
                   <ShoppingCartIcon class="h-5 w-5 mr-2" />
-                  Add to Cart
+                  {{ isInCart ? 'Update Cart' : 'Add to Cart' }}
                 </button>
               </div>
             </div>
@@ -68,6 +81,8 @@
   
   <script>
   import axios from 'axios';
+  import { useCartStore } from '@/stores/cart';
+  import { useToastStore } from '@/stores/toast';
   import { ShoppingCartIcon, MinusIcon, PlusIcon, XCircleIcon, ArrowLeftIcon } from 'lucide-vue-next'
   
   export default {
@@ -81,40 +96,59 @@
     },
     data() {
       return {
-        quantity: 1,
-        product: null
+        product: null,
+        loading: true,
+        error: null,
+        cartStore: useCartStore(),
+        toastStore: useToastStore()
       }
     },
     mounted() {
       this.getProduct()
     },
+    computed: {
+      isInCart() {
+        return this.product && this.cartStore.items.some(item => item.id === this.product.id);
+      },
+      cartQuantity() {
+        if (!this.product) return 0;
+        const cartItem = this.cartStore.items.find(item => item.id === this.product.id);
+        return cartItem ? cartItem.quantity : 0;
+      }
+    },
     methods: {
       async getProduct() {
         const slug = this.$route.params.slug
+        this.loading = true;
+        this.error = null;
         try {
           const response = await axios.get(`/api/products/${slug}/`)
           this.product = response.data
         } catch (error) {
           console.error('Error fetching product:', error)
+          this.error = "Failed to load product. Please try again."
+        } finally {
+          this.loading = false;
         }
       },
       addToCart() {
-        if (this.quantity > 0 && this.quantity <= this.product.stock) {
-          console.log(`Added ${this.quantity} of ${this.product.name} to cart`)
-          alert(`Added ${this.quantity} of ${this.product.name} to cart`)
-          
-          this.product.stock -= this.quantity
-          this.quantity = 1
+        if (this.product.stock > 0) {
+          this.cartStore.addItem(this.product);
+          const brandName = this.product.brand?.name || "No Brand"; 
+          const message = this.product.brand
+            ? `Added ${brandName} ${this.product.name} to cart`
+            : `Added ${this.product.name} to cart`;
+          this.toastStore.showToast(5000, message, "bg-emerald-500");
         }
       },
       increaseQuantity() {
-        if (this.quantity < this.product.stock) {
-          this.quantity++
+        if (this.cartQuantity < this.product.stock) {
+          this.cartStore.updateQuantity(this.product.id, this.cartQuantity + 1);
         }
       },
       decreaseQuantity() {
-        if (this.quantity > 1) {
-          this.quantity--
+        if (this.cartQuantity > 1) {
+          this.cartStore.updateQuantity(this.product.id, this.cartQuantity - 1);
         }
       },
       goBack() {

@@ -18,13 +18,13 @@
                   class="w-full h-full object-cover transform group-hover:scale-105 transition-transform duration-300"
                 />
               </div>
-              <h3 v-if="product.brand" class="text-lg font-medium text-gray-800 mb-2">
+              <RouterLink :to="{name:'product-detail', params:{slug:product.slug}}"><h3 v-if="product.brand" class="text-lg font-medium text-gray-800 mb-2">
                 {{ product.brand.name }}
               </h3>
               <p class="text-lg font-small text-gray-600 mb-2">
                 {{ product.name }}
               </p>
-              <p class="text-emerald-700 font-medium">{{ product.price }}</p>
+              <p class="text-emerald-700 font-medium">{{ product.price }}</p></RouterLink>
             </div>
           </div>
         </div>
