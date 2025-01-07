@@ -109,4 +109,5 @@ class Product(models.Model):
     
     
     def __str__(self):
-        return self.name
+        brand_name = self.brand.name if self.brand else ''
+        return f'{brand_name} - {self.name}'

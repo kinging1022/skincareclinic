@@ -21,9 +21,11 @@
               >
                 <img :src="item.get_thumbnail" :alt="item.name" class="w-16 h-16 object-cover rounded" />
                 <div class="flex-grow">
-                  <h3 v-if="item.brand" class="font-medium">{{ item.brand.name }}</h3>
-                  <p class="text-gray-700">{{ item.name }}</p>
-                  <p class="text-black-500">${{ item.price.toFixed(2) }}</p>
+                  <RouterLink
+                  :to="{name:'product-detail', params:{slug:item.slug}}"> 
+                    <h3 v-if="item.brand" class="font-medium">{{ item.brand.name }}</h3>
+                  <p class="text-gray-700">{{ item.name }}</p></RouterLink>
+                  <p class="text-black-500">${{ item.price.toLocaleString() }}</p>
                 </div>
                 <div class="flex items-center gap-2">
                   <button
@@ -35,8 +37,10 @@
                   <span class="w-8 text-center">{{ item.quantity }}</span>
                   <button
                     @click="increaseQuantity(item)"
-                    class="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full hover:bg-emerald-200 transition-colors"
-                  >
+                    class="w-8 h-8 flex items-center justify-center bg-emerald-100 rounded-full hover:bg-emerald-200 transition-colors disabled:opacity-50 disabled:cursor-not-allowed"
+                    :class="{'opacity-50 cursor-not-allowed': item.quantity >= item.stock}"
+
+                    >
                     <Plus class="w-4 h-4" />
                   </button>
                 </div>
@@ -55,16 +59,16 @@
               <div class="space-y-3 mb-4">
                 <div class="flex justify-between">
                   <span class="text-gray-600">Subtotal</span>
-                  <span>${{ subtotal.toFixed(2) }}</span>
+                  <span>${{ subtotal.toLocaleString() }}</span>
                 </div>
                 <div class="flex justify-between">
                   <span class="text-gray-600">Tax</span>
-                  <span>${{ tax.toFixed(2) }}</span>
+                  <span>${{ tax.toLocaleString() }}</span>
                 </div>
                 <div class="h-px bg-emerald-100"></div>
                 <div class="flex justify-between font-medium">
                   <span>Total</span>
-                  <span>${{ total.toFixed(2) }}</span>
+                  <span>${{ total.toLocaleString() }}</span>
                 </div>
               </div>
               <RouterLink to="/checkout"  class="w-full bg-emerald-600 text-white py-3 px-4 rounded-lg hover:bg-emerald-700 transition-colors">
@@ -107,7 +111,12 @@
     },
     methods: {
       increaseQuantity(item) {
-        this.cartStore.updateQuantity(item.id, item.quantity + 1)
+        if (item.quantity < item.stock) {
+          this.cartStore.updateQuantity(item.id, item.quantity + 1)
+        } else {
+            
+            alert(`only ${item.stock} items left in stock`)
+        }
       },
       decreaseQuantity(item) {
         if (item.quantity > 1) {
@@ -117,7 +126,6 @@
       removeItem(item) {
         this.cartStore.removeItem(item.id)
       },
-      
     }
   }
   </script>

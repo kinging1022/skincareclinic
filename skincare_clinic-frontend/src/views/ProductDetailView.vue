@@ -33,7 +33,7 @@
                 <h1 class="text-3xl font-bold text-gray-900 mb-4">{{ product.name }}</h1>
                 <p class="text-gray-600 mb-6">{{ product.description }}</p>
                 <div class="flex items-center mb-6">
-                  <span class="text-2xl font-bold text-gray-900">${{ product.price }}</span>
+                  <span class="text-2xl font-bold text-gray-900">${{ product.price.toLocaleString() }}</span>
                   <span :class="product.stock > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'" 
                         class="ml-4 px-3 py-1 rounded-full text-sm font-medium">
                     {{ product.stock > 0 ? `${product.stock} in stock` : 'Out of stock' }}
@@ -41,10 +41,10 @@
                 </div>
               </div>
               <div>
-                <div class="flex items-center mb-6">
+                <div class="flex items-center mb-6" v-if="product.stock > 0">
                   <button @click="decreaseQuantity" 
                           class="bg-emerald-100 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-200 h-10 w-10 rounded-l cursor-pointer outline-none"
-                          :disabled="cartQuantity <= 1 || !isInCart">
+                          :class="{'opacity-50 cursor-not-allowed' : cartQuantity <= 1 || !isInCart}">
                     <MinusIcon class="h-5 w-5 m-auto" />
                   </button>
                   <div class="outline-none focus:outline-none text-center w-24 bg-gray-100 font-semibold text-md md:text-base flex items-center justify-center text-gray-700">
@@ -52,15 +52,16 @@
                   </div>
                   <button @click="increaseQuantity"
                           class="bg-emerald-100 text-emerald-600 hover:text-emerald-700 hover:bg-emerald-200 h-10 w-10 rounded-r cursor-pointer"
-                          :disabled="cartQuantity >= product.stock">
+                          :class="{'opacity-50 cursor-not-allowed': cartQuantity >= product.stock}">
                     <PlusIcon class="h-5 w-5 m-auto" />
                   </button>
                 </div>
                 <button @click="addToCart"
-                        class="w-full bg-emerald-600 text-white py-3 px-6 rounded-lg hover:bg-emerald-700 transition duration-300 ease-in-out flex items-center justify-center"
-                        :disabled="product.stock === 0">
+                        class="w-full py-3 px-6 rounded-lg transition duration-300 ease-in-out flex items-center justify-center"
+                        :class="product.stock === 0 ? 'bg-red-600 text-white cursor-not-allowed' : 'bg-emerald-600 text-white hover:bg-emerald-700'"
+                        :disabled="product.stock === 0 || isInCart">
                   <ShoppingCartIcon class="h-5 w-5 mr-2" />
-                  {{ isInCart ? 'Update Cart' : 'Add to Cart' }}
+                  {{ product.stock === 0 ? 'Out of Stock' : (isInCart ? 'Already in cart' : 'Add to Cart') }}
                 </button>
               </div>
             </div>
@@ -138,17 +139,24 @@
           const message = this.product.brand
             ? `Added ${brandName} ${this.product.name} to cart`
             : `Added ${this.product.name} to cart`;
-          this.toastStore.showToast(5000, message, "bg-emerald-500");
+          this.toastStore.showToast(2000, message, "bg-emerald-500");
         }
       },
       increaseQuantity() {
         if (this.cartQuantity < this.product.stock) {
           this.cartStore.updateQuantity(this.product.id, this.cartQuantity + 1);
+        }else if (this.cartQuantity >= this.product.stock){
+          alert(`only ${this.product.stock} items left in stock`)
         }
       },
       decreaseQuantity() {
         if (this.cartQuantity > 1) {
           this.cartStore.updateQuantity(this.product.id, this.cartQuantity - 1);
+        }else if (this.cartQuantity === 1)
+        {
+            this.cartStore.removeItem(this.product.id)
+            this.toastStore.showToast(2000, `${this.product.name} removed from cart`, "bg-red-500");
+            this.goBack()
         }
       },
       goBack() {

@@ -18,10 +18,10 @@ export const useCartStore = defineStore('cart', {
             return this.subtotal * 0.08 
         },
         total() {
-            return this.subtotal + this.tax + 5 
+            return this.subtotal + this.tax 
         },
         totalWeight(state) {
-            return state.items.reduce((total, item) => total + item.weight, 0);
+            return state.items.reduce((total, item) => total + item.weight * item.quantity, 0);
         },
         isCartExpired(state) {
             if (!state.timestamp) return false;
@@ -69,6 +69,13 @@ export const useCartStore = defineStore('cart', {
             this.timestamp = new Date().getTime();
             localStorage.setItem('cartItems', JSON.stringify(this.items));
             localStorage.setItem('cartTimestamp', JSON.stringify(this.timestamp));
+        },
+        updateStock(productId, stock) {
+            const item = this.items.find(item => item.id === productId);
+            if (item) {
+            item.stock = stock;
+            }
+            this.saveCart();
         },
         initializeCart() {
             const savedCart = JSON.parse(localStorage.getItem('cartItems')) || [];

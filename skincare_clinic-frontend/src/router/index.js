@@ -5,6 +5,8 @@ import ProductDetailView from '@/views/ProductDetailView.vue'
 import CartView from '@/views/CartView.vue'
 import TrackingView from '@/views/TrackingView.vue'
 import CheckoutView from '@/views/CheckoutView.vue'
+import PaymentSuccess from '@/views/PaymentSuccess.vue'
+import PaymentFailed from '@/views/PaymentFailed.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -46,6 +48,16 @@ const router = createRouter({
       path: '/checkout',
       name: 'checkout',
       component: CheckoutView,
+    },
+    {
+      path: '/payment-success/:id',
+      name: 'payment-success',
+      component: PaymentSuccess,
+    },
+    {
+      path: '/payment-failed/',
+      name: 'payment-failed',
+      component: PaymentFailed,
     },
   ],
 })

@@ -24,7 +24,7 @@
               <p class="text-lg font-small text-gray-600 mb-2">
                 {{ product.name }}
               </p>
-              <p class="text-emerald-700 font-medium">{{ product.price }}</p></RouterLink>
+              <p class="text-emerald-700 font-medium">${{ product.price.toLocaleString() }}</p></RouterLink>
             </div>
           </div>
         </div>

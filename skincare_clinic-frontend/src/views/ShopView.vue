@@ -55,7 +55,7 @@
               <p class="text-gray-500 text-sm mb-2">{{ product.name }}</p>
             </RouterLink>
             <div class="flex items-center justify-between">
-              <span class="text-[#2E8B57] font-bold">${{ product.price.toFixed(2) }}</span>
+              <span class="text-[#2E8B57] font-bold">${{ product.price.toLocaleString() }}</span>
               <button @click="addToCart(product)" 
                 class="text-sm px-3 py-1 bg-[#2E8B57] text-white rounded-full hover:bg-[#267346] transition-colors disabled:bg-gray-400 disabled:cursor-not-allowed md:flex md:items-center md:space-x-1"
                 :disabled="product.stock === 0"
