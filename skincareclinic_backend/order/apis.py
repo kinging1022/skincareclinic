@@ -3,8 +3,37 @@ from rest_framework.response import Response
 import requests
 from rest_framework import status
 from shop.models import Product
+from .models import Order
+from .serializers import OrderSerializer
 from .utils import process_checkout
 from django.conf import settings
+
+
+
+
+@api_view(['POST'])
+def track_order(request):
+    tracking = request.data.get('tracking')
+
+    try:
+        order = Order.objects.get(transaction_ref=tracking)
+    
+    except Order.DoesNotExist:
+        return Response({'error':'order does not exist'},status=status.HTTP_404_NOT_FOUND)
+ 
+
+    status = order.status
+
+    return Response({'status':status})
+
+
+
+
+
+
+
+
+
 
 def format_price(price):
     price = float(price)

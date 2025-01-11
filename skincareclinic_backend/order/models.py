@@ -9,10 +9,10 @@ from xhtml2pdf import pisa
 
 # Create your models here.
 class Order(models.Model):
-   ORDERED = 'ordered'
-   RECIEVED = 'recieved' 
-   PROCESSED = 'processed'
-   SENT = 'sent'
+   ORDERED =  3
+   RECIEVED = 0
+   PROCESSED = 1
+   SENT = 2
 
    STATUS_CHOICES = (
       (ORDERED,'Ordered'),
@@ -43,7 +43,7 @@ class Order(models.Model):
    paid = models.BooleanField(default=False)
    transaction_ref = models.CharField(max_length=225,null=True,blank=True,editable=False)
    shipped_date = models.DateField(blank=True, null=True)
-   status = models.CharField(max_length=20, choices=STATUS_CHOICES, default=ORDERED)
+   status = models.IntegerField( choices=STATUS_CHOICES, default=ORDERED)
 
 
    def __str__(self):

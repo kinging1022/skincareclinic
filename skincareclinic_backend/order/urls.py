@@ -7,4 +7,5 @@ from . import webhooks
 urlpatterns = [
     path('checkout/', apis.checkout, name='checkout'),
     path('hooks/',webhooks.paystack_webhook, name='paystack_webhook'),
+    path('track_order/', apis.track_order, name='track_order')
 ]

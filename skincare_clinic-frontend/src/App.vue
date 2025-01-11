@@ -11,7 +11,7 @@
               <RouterLink to="/" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Home</RouterLink>
               <RouterLink to="/shop" class="text-gray-600 hover:text-emerald-700">Shop</RouterLink>
               <RouterLink to="/track-order" class="text-gray-600 hover:text-emerald-700">Track Order</RouterLink>
-              <a href="#" class="text-gray-600 hover:text-emerald-700">Blog</a>
+              <RouterLink to="/blog" class="text-gray-600 hover:text-emerald-700">Blog</RouterLink>
             </div>
             <div class="hidden md:flex items-center space-x-4">
               <button class="p-2 text-gray-600 hover:text-emerald-700">

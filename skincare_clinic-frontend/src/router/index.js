@@ -7,6 +7,8 @@ import TrackingView from '@/views/TrackingView.vue'
 import CheckoutView from '@/views/CheckoutView.vue'
 import PaymentSuccess from '@/views/PaymentSuccess.vue'
 import PaymentFailed from '@/views/PaymentFailed.vue'
+import BlogView from '@/views/BlogView.vue'
+import AnalyticsView from '@/views/AnalyticsView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -55,9 +57,19 @@ const router = createRouter({
       component: PaymentSuccess,
     },
     {
-      path: '/payment-failed/',
+      path: '/payment-failed',
       name: 'payment-failed',
       component: PaymentFailed,
+    },
+    {
+      path: '/blog',
+      name: 'blog',
+      component: BlogView,
+    },
+    {
+      path: '/analytics',
+      name: 'analytics',
+      component: AnalyticsView,
     },
   ],
 })

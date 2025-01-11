@@ -1,26 +1,4 @@
 <template>
-    <div class="min-h-screen bg-slate-50">
-      <header class="bg-white shadow-sm">
-        <nav class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
-          <div class="flex justify-between items-center h-16">
-            <div class="flex items-center">
-              <Menu class="h-6 w-6 text-gray-500 sm:hidden" />
-              <h1 class="ml-4 text-2xl font-semibold text-emerald-700">
-                Glow Guide
-              </h1>
-            </div>
-            <div class="hidden sm:flex space-x-8">
-              <a href="#" class="text-emerald-600 hover:text-emerald-500">Home</a>
-              <a href="#" class="text-gray-600 hover:text-emerald-500">Categories</a>
-              <a href="#" class="text-gray-600 hover:text-emerald-500">About</a>
-              <a href="#" class="text-gray-600 hover:text-emerald-500">Contact</a>
-            </div>
-            <div class="flex items-center">
-              <Search class="h-5 w-5 text-gray-500" />
-            </div>
-          </div>
-        </nav>
-      </header>
       <main class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-8">
         <div class="grid gap-8 md:grid-cols-2 lg:grid-cols-3">
           <article
@@ -54,7 +32,6 @@
           </article>
         </div>
       </main>
-    </div>
   </template>
   
   <script>
