@@ -62,7 +62,7 @@ export default {
   methods: {
     async getPopularProducts() {
       try {
-        const response = await axios.get('api/popular_products/')
+        const response = await axios.get('api/shop/popular_products/')
         this.popularProducts = response.data
       } catch (error) {
         console.error(error)
@@ -70,7 +70,7 @@ export default {
     },
     async getFeaturedProduct(){
       try {
-        const response = await axios.get('api/featured_products/')
+        const response = await axios.get('api/shop/featured_products/')
         this.featuredProducts = response.data
       } catch (error) {
         console.error(error)
@@ -78,7 +78,7 @@ export default {
     },
     async getNewArrivals(){
       try {
-        const response = await axios.get('api/new_arrivals/')
+        const response = await axios.get('api/shop/new_arrivals/')
         this.newArrivals = response.data
       } catch (error) {
         console.error(error)

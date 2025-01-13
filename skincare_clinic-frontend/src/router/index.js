@@ -9,6 +9,8 @@ import PaymentSuccess from '@/views/PaymentSuccess.vue'
 import PaymentFailed from '@/views/PaymentFailed.vue'
 import BlogView from '@/views/BlogView.vue'
 import AnalyticsView from '@/views/AnalyticsView.vue'
+import SearchView from '@/views/SearchView.vue'
+import LoginView from '@/views/LoginView.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -70,6 +72,16 @@ const router = createRouter({
       path: '/analytics',
       name: 'analytics',
       component: AnalyticsView,
+    },
+    {
+      path: '/search',
+      name: 'search',
+      component: SearchView,
+    },
+    {
+      path: '/admin/login',
+      name: 'login',
+      component: LoginView,
     },
   ],
 })

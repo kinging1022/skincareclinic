@@ -1,36 +1,28 @@
-from django.shortcuts import render , redirect
+from django.shortcuts import render , get_object_or_404
+from django.contrib.auth.decorators import login_required
+from django.template.loader import get_template
 from django.http import HttpResponse
 from .models import Order
 
-def success(request):
-    transaction_id = request.GET.get('order_id', None)
 
-    if not transaction_id:
-        return HttpResponse("Transaction ID not provided", status=400)
-    
 
-    try:
-        transaction = Order.objects.get(id=transaction_id)
 
-        if not transaction.paid:
-            return redirect('payment-cancel')
 
-        context = {
-            'transaction_id': transaction_id,
-            'amount': transaction.order_amount_with_shipping,
-            'timestamp': transaction.created_at  
-        }
+@login_required
 
-        return render(request, 'payments/success.html', context)
+def admin_order_pdf(request, order_id):
+    if request.user.is_superuser:
+        order = get_object_or_404(Order, pk=order_id)
+        pdf = order.generate_pdf()
 
-    except Order.DoesNotExist:
-        return HttpResponse("Transaction not found", status=404)
+        if pdf:
+            response = HttpResponse(pdf, content_type='application/pdf')
+            content = f"attachment; filename='{order_id}.pdf"
+            response['Content-Disposition'] = content
+
+            return response
+        
+    return HttpResponse("Not found")
     
 
 
-def cancel(request):
-
-
-    return render(request, 'payments/failed.html')
-
-    

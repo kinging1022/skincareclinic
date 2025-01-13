@@ -56,8 +56,11 @@ class Order(models.Model):
        from_email = settings.DEFAULT_FROM_EMAIL
        recipient_list = [settings.BRAND_EMAIL]
 
+       pdf = self.generate_pdf()
+
        email = EmailMessage(subject, message, from_email, recipient_list)
        email.content_subtype = 'html'
+       email.attach(f'order_{self.id}.pdf', pdf,  'application/pdf')
        email.send()
 
 

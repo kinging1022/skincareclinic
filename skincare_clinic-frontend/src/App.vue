@@ -1,7 +1,7 @@
 <template>
   <div class="w-full min-h-screen bg-white">
     <header>
-      <nav class="bg-white shadow-sm fixed top-0 left-0 right-0 z-50">
+      <nav class="bg-white shadow-sm">
         <div class="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8">
           <div class="flex justify-between h-16 items-center">
             <div class="flex-shrink-0 flex items-center">
@@ -12,23 +12,29 @@
               <RouterLink to="/shop" class="text-gray-600 hover:text-emerald-700">Shop</RouterLink>
               <RouterLink to="/track-order" class="text-gray-600 hover:text-emerald-700">Track Order</RouterLink>
               <RouterLink to="/blog" class="text-gray-600 hover:text-emerald-700">Blog</RouterLink>
+              <RouterLink v-if="userStore.isAuthenticated" to="/analytics" class="text-gray-600 hover:text-emerald-700">Analytics</RouterLink>
+              <button v-if="userStore.isAuthenticated" @click="LogOut()" class="text-red-600 hover:text-red-700">Log out</button>
+
             </div>
             <div class="hidden md:flex items-center space-x-4">
-              <button class="p-2 text-gray-600 hover:text-emerald-700">
+              <RouterLink to="/search" class="p-2 text-gray-600 hover:text-emerald-700">
                 <search-icon :size="20" />
-              </button>
+              </RouterLink>
               <RouterLink to="/cart" class="p-2 text-gray-600 hover:text-emerald-700 relative">
                 <shopping-cart-icon :size="20" />
                 <span v-if="cartItemCount > 0" class="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
                   {{ cartItemCount }}
                 </span>
               </RouterLink>
+              
+            
+              
             </div>
             
             <div class="md:hidden flex items-center space-x-4">
-              <button class="p-2 text-gray-600 hover:text-emerald-700">
+              <RouterLink to="/search" class="p-2 text-gray-600 hover:text-emerald-700">
                 <search-icon :size="20" />
-              </button>
+              </RouterLink>
               <RouterLink to="/cart" class="p-2 text-gray-600 hover:text-emerald-700 relative">
                 <shopping-cart-icon :size="20" />
                 <span v-if="cartItemCount > 0" class="absolute -top-1 -right-1 bg-emerald-500 text-white text-xs rounded-full h-4 w-4 flex items-center justify-center">
@@ -47,7 +53,10 @@
             <RouterLink to="/" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Home</RouterLink>
             <RouterLink to="/shop" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Shop</RouterLink>
             <RouterLink  to="/track-order" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Track Order</RouterLink>
-            <a href="#" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Blog</a>
+            <RouterLink to="/blog" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Blog</RouterLink>
+            <RouterLink v-if="userStore.isAuthenticated" to="/analytics" class="block px-3 py-2 text-gray-600 hover:text-emerald-700">Analytics</RouterLink>
+            <button v-if="userStore.isAuthenticated" @click="LogOut()" class="block px-3 py-2 text-red-600 hover:text-red-700">Log out</button>
+
           </div>
         </div>
       </nav>
@@ -118,7 +127,8 @@
 import { RouterLink, RouterView } from 'vue-router'
 import { useCartStore } from './stores/cart';
 import Toast from './components/Toast.vue'
-import { Menu, X, ChevronDown, ShoppingCart, Search, User, Facebook, Twitter, Instagram } from 'lucide-vue-next'
+import { Menu, X, ChevronDown, ShoppingCart, Search, User, Facebook, Twitter, Instagram, Route , LogOut } from 'lucide-vue-next'
+import { useUserStore } from './stores/user';
 
 export default {
   name: 'App',
@@ -132,7 +142,8 @@ export default {
     FacebookIcon: Facebook,
     TwitterIcon: Twitter,
     InstagramIcon: Instagram,
-    Toast
+    Toast,
+    LogOut
   },
   data() {
     return {
@@ -141,6 +152,7 @@ export default {
       currentAnnouncement: 0,
       announcementInterval: null,
       cartStore : useCartStore(),
+      userStore: useUserStore(),
       announcements: [
         "Free shipping on orders over $50! 🚚",
         "New Summer Collection is here! ✨",
@@ -158,16 +170,22 @@ export default {
     },
     cartItemCount() {
       return this.cartStore.totalItems;
-    }
+    },
+    
+    
   },
   methods: {
     toggleMenu() {
       this.isOpen = !this.isOpen
-      console.log(this.isOpen)
     },
+    LogOut(){
+      this.userStore.removeToken()
+      this.$router.push('/shop')
+    }
   },
   mounted() {      
     // Announcement rotation logic
+    this.userStore.initStore();
     this.announcementInterval = this.cartStore.initializeCart
     setInterval(() => {
       this.currentAnnouncement = (this.currentAnnouncement + 1) % this.announcements.length
@@ -182,4 +200,3 @@ export default {
 <style scoped>
 /* Add any scoped styles here if needed */
 </style>
-

@@ -34,10 +34,10 @@
                 <p class="text-gray-600 mb-6">{{ product.description }}</p>
                 <div class="flex items-center mb-6">
                   <span class="text-2xl font-bold text-gray-900">${{ product.price.toLocaleString() }}</span>
-                  <span :class="product.stock > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'" 
+                 <!-- <span :class="product.stock > 0 ? 'bg-emerald-100 text-emerald-800' : 'bg-red-100 text-red-800'" 
                         class="ml-4 px-3 py-1 rounded-full text-sm font-medium">
                     {{ product.stock > 0 ? `${product.stock} in stock` : 'Out of stock' }}
-                  </span>
+                  </span>-->
                 </div>
               </div>
               <div>
@@ -123,7 +123,7 @@
         this.loading = true;
         this.error = null;
         try {
-          const response = await axios.get(`/api/products/${slug}/`)
+          const response = await axios.get(`/api/shop/products/${slug}/`)
           this.product = response.data
         } catch (error) {
           console.error('Error fetching product:', error)
