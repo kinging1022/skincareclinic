@@ -233,74 +233,85 @@
             },
           });
           this.locations = response.data;
+          console.log(response.data)
         } catch (error) {
           this.$toast.error("Failed to load delivery prices. Please try again.");
         }
       },
       async makePayment() {
-        this.errors = {};
-  
-        if (!this.fullName) this.errors.fullName = "Full Name is required.";
-        if (!this.email) this.errors.email = "Email is required.";
-        if (!this.address) this.errors.address = "Address is required.";
-        if (!this.phoneNumber) this.errors.phoneNumber = "Phone Number is required.";
-        if (this.deliveryOption === "delivery" && !this.selectedLocation) {
-          this.errors.selectedLocation = "Delivery Location is required.";
-        }
-        if (this.deliveryOption === "delivery" && !this.selectedArea) {
-          this.errors.selectedArea = "Delivery Area is required.";
-        }
-  
-        if (Object.keys(this.errors).length > 0) return;
-  
-        const payload = {
-          full_name: this.fullName,
-          email: this.email,
-          address: this.address,
-          phone_number: this.phoneNumber,
-          delivery_option: this.deliveryOption,
-          delivery_location: this.selectedArea,
-          total_weight: this.totalWeight,
-          shipping_fee: this.deliveryFee,
-          total: this.total,
-          total_plus_delivery: this.totalPlusDelivery,
-          items: this.cartStore.items.map((item) => ({
-            product: item.id,
-            quantity: item.quantity,
-          })),
-        };
-  
-        // Proceed with payment logic
-        console.log("Payload for payment:", payload);
-        try{
-            const response = await axios.post("api/checkout/", payload);
-            console.log(response.data);
-            window.location.href = response.data.redirect_url;
+    this.errors = {};
 
-        }catch(error){
-            if(error.response && error.response.status === 400 && error.response.data.insufficient_products){
-                const errorData = error.response.data;
-                if(errorData.insufficient_products){
-                    this.insufficient_products = errorData.insufficient_products;
-                    this.showInsufficientStockModal = true;
-                    this.insufficient_products.forEach(product => {
-                        const cartItem = this.cartStore.items.find(item => item.name === product.name);
+    // Validate Full Name
+    if (!this.fullName) this.errors.fullName = "Full Name is required.";
+    
+    // Validate Email
+    if (!this.email) {
+      this.errors.email = "Email is required.";
+    } else if (!this.isValidEmail(this.email)) {
+      this.errors.email = "Please enter a valid email address.";
+    }
 
-                            if (cartItem) {
-                                this.cartStore.updateStock(cartItem.id, product.stock)
-                            }
-                    });
-                            
+    // Validate other fields
+    if (!this.address) this.errors.address = "Address is required.";
+    if (!this.phoneNumber) this.errors.phoneNumber = "Phone Number is required.";
+    if (this.deliveryOption === "delivery" && !this.selectedLocation) {
+      this.errors.selectedLocation = "Delivery Location is required.";
+    }
+    if (this.deliveryOption === "delivery" && !this.selectedArea) {
+      this.errors.selectedArea = "Delivery Area is required.";
+    }
 
-                    this.toastStore.showToast(5000,"Some products are out of stock. Please remove them from your cart.", 'bg-red-500');
-                }
-            }else {
-                this.$toast.error("An error occurred during checkout. Please try again.");
+    if (Object.keys(this.errors).length > 0) return;
+
+    const payload = {
+      full_name: this.fullName,
+      email: this.email,
+      address: this.address,
+      phone_number: this.phoneNumber,
+      delivery_option: this.deliveryOption,
+      delivery_location: this.selectedArea,
+      total_weight: this.totalWeight,
+      shipping_fee: this.deliveryFee,
+      total: this.total,
+      total_plus_delivery: this.totalPlusDelivery,
+      items: this.cartStore.items.map((item) => ({
+        product: item.id,
+        quantity: item.quantity,
+      })),
+    };
+
+    // Proceed with payment logic
+    console.log("Payload for payment:", payload);
+    try {
+      const response = await axios.post("api/checkout/", payload);
+      console.log(response.data);
+      window.location.href = response.data.redirect_url;
+    } catch (error) {
+      if (error.response && error.response.status === 400 && error.response.data.insufficient_products) {
+        const errorData = error.response.data;
+        if (errorData.insufficient_products) {
+          this.insufficient_products = errorData.insufficient_products;
+          this.showInsufficientStockModal = true;
+          this.insufficient_products.forEach(product => {
+            const cartItem = this.cartStore.items.find(item => item.name === product.name);
+            if (cartItem) {
+              this.cartStore.updateStock(cartItem.id, product.stock);
             }
-            
-        }
+          });
 
-      },
+          this.toastStore.showToast(5000, "Some products are out of stock. Please remove them from your cart.", 'bg-red-500');
+        }
+      } else {
+        this.$toast.error("An error occurred during checkout. Please try again.");
+      }
+    }
+  },
+
+  // Email validation function using a simple regex
+  isValidEmail(email) {
+    const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+    return regex.test(email);
+  },
       updateCartAutomatically() {
         this.insufficient_products.forEach(product => {
             const cartItem = this.cartStore.items.find(item => item.name === product.name);

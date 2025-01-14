@@ -4,7 +4,6 @@ import requests
 from rest_framework import status
 from shop.models import Product
 from .models import Order
-from .serializers import OrderSerializer
 from .utils import process_checkout
 from django.conf import settings
 
@@ -30,11 +29,6 @@ def track_order(request):
 
 
 
-
-
-
-
-
 def format_price(price):
     price = float(price)
     return f'{price:,.2f}'
@@ -45,6 +39,8 @@ def checkout(request):
     items = request.data.get('items')
 
     insufficient_products = []
+    total = 0
+    total_weight = 0
 
     # Check if the quantity of the items is available
     for item in items:
@@ -56,20 +52,25 @@ def checkout(request):
             insufficient_products.append({'name': product.name,
                                          'stock': product.stock
                                          })
+            
+        total += product.price * quantity
+        total_weight += product.weight * quantity
 
     if insufficient_products:
         return Response({'error': 'some products are not available in stock', 'insufficient_products': insufficient_products}, status=status.HTTP_400_BAD_REQUEST)
     
+    shipping = request.data.get('shipping_fee')
+    total_with_shipping = total + shipping
 
     order_id = process_checkout(
                           full_name=request.data.get('full_name'),
                           email=request.data.get('email'), 
                           address=request.data.get('address'), 
                           phone=request.data.get('phone_number'), 
-                          weight=request.data.get('total_weight'), 
-                          order_amount=format_price(request.data.get('total')), 
-                          shipping_fee=format_price(request.data.get('shipping_fee')), 
-                          order_amount_with_shipping=format_price(request.data.get('total_plus_delivery')), 
+                          weight= total_weight,
+                          order_amount=total, 
+                          shipping_fee= format_price(shipping), 
+                          order_amount_with_shipping=format_price(total_with_shipping), 
                           delivery_method=request.data.get('delivery_option'), 
                           delivery_area=request.data.get('delivery_location'), 
                           items=items,
@@ -88,7 +89,7 @@ def checkout(request):
 
         session_data = {
             'email': request.data.get('email'), 
-            'amount': float(request.data.get('total_plus_delivery')) * 100,  # Amount in kobo
+            'amount': float(total_with_shipping) * 100,  # Amount in kobo
             'metadata': metadata,
             'callback_url': f'http://localhost:5173/payment-success/{order_id}'
         }

@@ -25,3 +25,5 @@ def get_delivery_price(request):
     )
     serializer = DeliverySerializer(delivery, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
+
+

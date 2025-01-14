@@ -51,7 +51,7 @@ axios.interceptors.response.use(
                 userStore.removeToken();
                 alert('Your session has expired. Please log in again.');
 
-                router.push('/login');
+                router.push('/admin/login');
             }
         }
         return Promise.reject(error);
