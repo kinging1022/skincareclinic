@@ -129,6 +129,7 @@ import { useCartStore } from './stores/cart';
 import Toast from './components/Toast.vue'
 import { Menu, X, ChevronDown, ShoppingCart, Search, User, Facebook, Twitter, Instagram, Route , LogOut } from 'lucide-vue-next'
 import { useUserStore } from './stores/user';
+import axios from 'axios';
 
 export default {
   name: 'App',
@@ -153,11 +154,7 @@ export default {
       announcementInterval: null,
       cartStore : useCartStore(),
       userStore: useUserStore(),
-      announcements: [
-        "Free shipping on orders over $50! 🚚",
-        "New Summer Collection is here! ✨",
-        "Get 20% off on your first purchase! 🎉",
-      ],
+      announcements: [],
     }
   },
   computed: {
@@ -175,6 +172,18 @@ export default {
     
   },
   methods: {
+    async getAnnoucements(){
+      try{
+
+        const response = await axios.get('api/annoucements/')
+        
+        this.announcements = response.data.map(announcement => announcement.title.replace(/['"]+/g, ''));
+
+      }catch(error){
+
+      }
+
+    },
     toggleMenu() {
       this.isOpen = !this.isOpen
     },
@@ -185,9 +194,10 @@ export default {
   },
   mounted() {      
     // Announcement rotation logic
+    this.getAnnoucements()
     this.userStore.initStore();
-    this.announcementInterval = this.cartStore.initializeCart
-    setInterval(() => {
+    this.cartStore.initializeCart
+    this.announcementInterval = setInterval(() => {
       this.currentAnnouncement = (this.currentAnnouncement + 1) % this.announcements.length
     }, 5000)
   },

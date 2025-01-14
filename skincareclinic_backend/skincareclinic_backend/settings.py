@@ -80,6 +80,7 @@ INSTALLED_APPS = [
     'order',
     'delivery',
     'blog',
+    'annoucement'
 ]
 
 MIDDLEWARE = [
