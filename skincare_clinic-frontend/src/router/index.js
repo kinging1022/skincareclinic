@@ -11,6 +11,7 @@ import BlogView from '@/views/BlogView.vue'
 import AnalyticsView from '@/views/AnalyticsView.vue'
 import SearchView from '@/views/SearchView.vue'
 import LoginView from '@/views/LoginView.vue'
+import Collections from '@/views/Collections.vue'
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -34,7 +35,12 @@ const router = createRouter({
       component: ShopView,
     },
     {
-      path: '/shop/:slug',
+      path: '/shop/:collections_name/:slug',
+      name: 'collections',
+      component: Collections,
+    },
+    {
+      path: '/shop/product/:slug',
       name: 'product-detail',
       component: ProductDetailView,
     },
@@ -84,6 +90,17 @@ const router = createRouter({
       component: LoginView,
     },
   ],
+  
+  // Add scrollBehavior function to handle scroll position
+  scrollBehavior(to, from, savedPosition) {
+    // If there's a saved position (when using back/forward navigation)
+    if (savedPosition) {
+      return savedPosition;
+    }
+    
+    // For all other navigations, scroll to top
+    return { top: 0 };
+  }
 })
 
 export default router

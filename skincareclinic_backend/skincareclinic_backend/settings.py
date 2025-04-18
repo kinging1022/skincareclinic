@@ -37,6 +37,8 @@ DEBUG = os.getenv('DEBUG')
 ALLOWED_HOSTS = ['c308-102-89-85-214.ngrok-free.app','127.0.0.1','localhost',
 ]
 
+SITE_URL = os.getenv('SITE_URL')
+FRONTEND_URL = os.getenv('FRONTEND_URL')
 
 # Application definition
 
@@ -51,6 +53,34 @@ EMAIL_HOST_PASSWORD = os.getenv('EMAIL_HOST_PASSWORD')
 DEFAULT_FROM_EMAIL = os.getenv('DEFAULT_FROM_EMAIL')
 BRAND_EMAIL = os.getenv('BRAND_EMAIL')
 
+
+# Logging settings
+LOGGING = {
+    'version': 1,
+    'disable_existing_loggers': False,
+    'formatters': {
+        'simple': {
+            'format': '[{levelname}] {asctime} {name} - {message}',
+            'style': '{',
+        },
+    },
+    'handlers': {
+        'console': {
+            'class': 'logging.StreamHandler',
+            'formatter': 'simple',
+        },
+    },
+    'loggers': {
+        'order': {
+            'handlers': ['console'],
+            'level': 'DEBUG',
+            'propagate': False,
+        },
+    }
+}
+
+
+# CORS settings
 CORS_ALLOWED_ORIGINS = [
     "http://localhost:5173"
     
@@ -58,8 +88,10 @@ CORS_ALLOWED_ORIGINS = [
 
 
 
+
+
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
     'AUTH_HEADER_TYPES': ('Bearer',),
 }
@@ -75,6 +107,7 @@ INSTALLED_APPS = [
     'rest_framework',
     'rest_framework_simplejwt',
     'corsheaders',
+    'imagekit',
     # Local apps
     'shop',
     'order',

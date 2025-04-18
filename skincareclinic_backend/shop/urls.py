@@ -13,6 +13,7 @@ urlpatterns = [
     path('shop/brands/', apis.get_brand, name='brand-list'),
     path('shop/filter_products/', apis.get_filtered_products, name='filtered-products'),
     path('shop/search/', apis.search, name='search'),
+    path('shop/collections/', apis.get_collections, name='collection-list'),
     path('auth/admin/login/', apis.admin_login, name='admin_login'),
     path('auth/token/refresh', TokenRefreshView.as_view(), name='token_refresh'),
     path('auth/token/verify/', TokenVerifyView.as_view(), name='token_verify'),

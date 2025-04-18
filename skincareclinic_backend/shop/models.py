@@ -1,15 +1,17 @@
 from django.db import models
 from django.utils.text import slugify
-from PIL import Image
-import os
 from django.conf import settings
-from io import BytesIO
-from django.core.files.uploadedfile import InMemoryUploadedFile
+from imagekit.models import ImageSpecField
+from imagekit.processors import ResizeToFill
+
+
 
 # Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=200)
     slug = models.SlugField(max_length=200, unique=True, blank=True)
+    image = models.ImageField(upload_to='categories/',blank=True, null=True)
+    thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(300, 300)], format='WEBP', options={'quality': 85})
     class Meta:
         ordering = ('name',)
         verbose_name = 'category'
@@ -18,7 +20,61 @@ class Category(models.Model):
     def save(self, *args, **kwargs):
         if not self.slug:
             self.slug = slugify(self.name)
-        super(Category, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
+
+
+    def get_thumbnail(self):
+        try:
+            return settings.SITE_URL + self.thumbnail.url
+        except ValueError:
+            return 'https://placehold.co/300'
+        
+   
+    def get_image(self):
+        try:
+            return settings.SITE_URL + self.image.url
+        except ValueError:
+            return 'https://placehold.co/400'
+        
+    
+
+    
+    
+    def __str__(self):
+        return self.name
+    
+
+class Collections(models.Model):
+    name = models.CharField(max_length=200)
+    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    image = models.ImageField(upload_to='collections/',blank=True, null=True)
+    thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(300, 300)], format='WEBP', options={'quality': 85})
+    class Meta:
+        ordering = ('name',)
+        verbose_name = 'collection'
+        verbose_name_plural = 'collections'
+
+    def save(self, *args, **kwargs):
+        if not self.slug:
+            self.slug = slugify(self.name)
+        super().save(*args, **kwargs)
+
+
+    def get_thumbnail(self):
+        try:
+            return settings.SITE_URL + self.thumbnail.url
+        except ValueError:
+            return 'https://placehold.co/300'
+        
+   
+    def get_image(self):
+        try:
+            return settings.SITE_URL + self.image.url
+        except ValueError:
+            return 'https://placehold.co/400'
+        
+    
+
     
     
     def __str__(self):
@@ -37,7 +93,7 @@ class Brand(models.Model):
         if not self.slug:
             self.slug = slugify(self.name)
 
-        super(Brand, self).save(*args, **kwargs)
+        super().save(*args, **kwargs)
     
     
     def __str__(self):
@@ -48,13 +104,14 @@ class Product(models.Model):
     slug = models.SlugField(max_length=200, unique=True, blank=True)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', blank=True, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='products', blank=True, null=True)
+    collection = models.ForeignKey(Collections, on_delete=models.SET_NULL, related_name='products', blank=True, null=True)
     description = models.TextField(blank=True)
     price = models.PositiveIntegerField()
-    image = models.ImageField(upload_to='products/')
-    thumbnail = models.ImageField(upload_to='products/', blank=True)
+    image = models.ImageField(upload_to='products/',blank=True, null=True)
+    thumbnail = ImageSpecField(source='image', processors = [ResizeToFill(300, 300)],format='WEBP',options={'quality': 85})                               
     available = models.BooleanField(default=True)
-    stock = models.PositiveIntegerField()
-    weight = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True)
+    stock = models.PositiveIntegerField(default=0)
+    weight = models.DecimalField(max_digits=10, decimal_places=2, blank=True, null=True, default=0)
     featured = models.BooleanField(default=False)
     views = models.PositiveIntegerField(default=0)
     created = models.DateTimeField(auto_now_add=True)
@@ -62,52 +119,42 @@ class Product(models.Model):
     class Meta:
         ordering = ('-created',)
 
+
+    def generate_slug(self):
+        base_slug = slugify(self.name)
+        brand_name = slugify(self.brand.name) if self.brand else ''
+        slug = f'{brand_name}-{base_slug}'
+        counter = 1
+        temp_slug = slug
+        while Product.objects.filter(slug=temp_slug).exists():
+            temp_slug = f'{slug}-{counter}'
+            counter += 1
+
+        return temp_slug
+
     def save(self, *args, **kwargs):
         if not self.slug:
-            base_slug = slugify(self.name)
-            brand_name = slugify(self.brand.name) if self.brand else ''
-            slug = f'{brand_name}-{base_slug}'
-            counter = 1
-            while Product.objects.filter(slug=slug).exists():
-                slug = f'{brand_name}-{base_slug}-{counter}'
-                counter += 1
-            self.slug = slug
-        super(Product, self).save(*args, **kwargs)
+            self.slug = self.generate_slug()
+        super().save(*args, **kwargs)
 
 
 
-        if self.image and not self.thumbnail:
-            img = Image.open(self.image)
-            img.thumbnail((300, 300), Image.Resampling.LANCZOS)
-            thumb_io = BytesIO()
-            img.save(thumb_io, img.format)
-            thumb_io.seek(0)
-            thumb_name = os.path.basename(self.image.name)
-            mime_type = f'image/{img.format.lower()}'
-            self.thumbnail = InMemoryUploadedFile(
-                thumb_io,
-                'ImageField',
-                thumb_name,
-                mime_type,
-                thumb_io.tell(),
-                None
-            )
-
-
-        super(Product, self).save(*args, **kwargs)
 
     def get_thumbnail(self):
-        if self.thumbnail:
-            return "http://127.0.0.1:8000" + self.thumbnail.url
-        return 'https://placehold.co/300'
-    
+        try:
+            return settings.SITE_URL + self.thumbnail.url
+        except ValueError:
+            return 'https://placehold.co/300'
+        
+   
     def get_image(self):
-        if self.image:
-            return "http://127.0.0.1:8000" + self.image.url
-        return 'https://placehold.co/400'
-
+        try:
+            return settings.SITE_URL + self.image.url
+        except ValueError:
+            return 'https://placehold.co/400'
+        
     
     
     def __str__(self):
         brand_name = self.brand.name if self.brand else ''
-        return f'{brand_name} - {self.name}'
+        return f'{brand_name} - {self.name}' if brand_name else self.name

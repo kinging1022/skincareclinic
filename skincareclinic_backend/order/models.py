@@ -108,9 +108,18 @@ class Order(models.Model):
 
 class OrderItem(models.Model):
     order = models.ForeignKey(Order, related_name='items', on_delete=models.CASCADE)
-    product = models.ForeignKey(Product, related_name='items', on_delete=models.DO_NOTHING)
+    product = models.ForeignKey(Product, related_name='items', on_delete=models.SET_NULL, blank=True, null=True)
+    product_name = models.CharField(max_length=225, blank=True, null=True)
+    brand_name = models.CharField(max_length=225, blank=True, null=True)
     price = models.CharField(max_length=225, blank=True, null=True)
     quantity = models.IntegerField(default=1)
+
+
+    def save(self, *args, **kwargs):
+        if self.product:
+            self.product_name = self.product.name
+            self.brand_name = self.product.brand.name if self.product.brand else ''
+        super().save(*args, **kwargs)
 
 
     def __str__(self) -> str:

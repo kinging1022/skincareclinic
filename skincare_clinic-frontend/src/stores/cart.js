@@ -1,4 +1,5 @@
 import { defineStore } from 'pinia';
+import { useToastStore } from './toast.js';
 
 const CART_EXPIRY_TIME = 5 * 60 * 60 * 1000; // 5 hours in milliseconds
 
@@ -40,6 +41,10 @@ export const useCartStore = defineStore('cart', {
             } else {
                 this.items.push({ ...product, quantity: 1 });
             }
+            const brandName = product.brand?.name || " "; 
+            const message = `Added ${brandName} ${product.name} to cart`;
+            const toastStore = useToastStore(); 
+            toastStore.showToast(5000, message, "bg-[#0a5c3e]");
             this.saveCart();
         },
         removeItem(productId) {

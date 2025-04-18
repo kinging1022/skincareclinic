@@ -6,8 +6,8 @@ from rest_framework.decorators import api_view
 from rest_framework.response import Response
 from rest_framework import status
 
-from .models import Product, Category, Brand
-from .serializers import ProductSerializer , CategorySerializer ,BrandSerializer
+from .models import Product, Category, Brand, Collections
+from .serializers import ProductSerializer , CategorySerializer ,BrandSerializer,CollectionSerializer
 
 from django.db.models import Q
 
@@ -31,11 +31,19 @@ def admin_login(request):
 
 @api_view(['GET'])
 def all_products(request):
-    products = Product.objects.all()[:100]
+    collection = request.GET.get('collection')
+    if collection:
+        products = Product.objects.filter(collection__slug=collection)
+    else:
+        products = Product.objects.all()[:100]
     serializer = ProductSerializer(products, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
-
+@api_view(['GET'])
+def get_collections(request):
+    collections = Collections.objects.all()
+    serializer = CollectionSerializer(collections, many=True)
+    return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
@@ -88,7 +96,6 @@ def get_filtered_products(request):
     brand = request.GET.get('brand')
     min_price = request.GET.get('minPrice')
     max_price = request.GET.get('maxPrice')
-    print(category)
     
     products = Product.objects.all()
 
