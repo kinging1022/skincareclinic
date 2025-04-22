@@ -32,8 +32,8 @@
           </p>
           <p class="text-lg text-[#4a6b5d] font-light leading-relaxed">
             we sell range of top-rated cleansers, moisturizers, serums, and treatments tailored to all skin 
-            types—from sensitive to acne-prone. Our friendly skincare experts are here to guide you with personalized advice and recommendations. 
-            Discover trusted brands, effective routines, and unbeatable value at Skin Care Clinic—where beautiful skin begins.Authentic 
+            types from sensitive to acne-prone. Our friendly skincare experts are here to guide you with personalized advice and recommendations. 
+            Discover trusted brands, effective routines, and unbeatable value at Skin Care Clinic where beautiful skin begins.Authentic 
             products from top brands like
             <span class="font-medium text-[#1c3a2e]">Cerave</span>, <span class="font-medium text-[#1c3a2e]">Dr Rashel</span>,
             <span class="font-medium text-[#1c3a2e]">Simple</span>,<span class="font-medium text-[#1c3a2e]">FaceFact</span>, 

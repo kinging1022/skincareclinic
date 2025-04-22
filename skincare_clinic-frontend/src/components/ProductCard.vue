@@ -24,6 +24,7 @@
            class="absolute top-2 right-2 bg-amber-500 text-white text-xs px-2 py-1 rounded-none font-medium tracking-wider">
         ONLY {{ product.stock }} LEFT
       </div>
+
       <div v-else-if="product.stock === 0" 
            class="absolute top-2 right-2 bg-red-500 text-white text-xs px-2 py-1 rounded-none font-medium tracking-wider">
         OUT OF STOCK

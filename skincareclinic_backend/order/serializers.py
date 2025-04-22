@@ -6,21 +6,15 @@ from shop.serializers import ProductSerializer
 
 
 class OrderSerializer(serializers.ModelSerializer):
-    date = serializers.SerializerMethodField()
-    value = serializers.SerializerMethodField()
+    created_at = serializers.DateTimeField(format='%Y-%m-%d', read_only =True)
 
     class Meta:
         model = Order
-        fields = ('id','date','value','paid','status')
+        fields = ('id','full_name','created_at','order_amount','paid','status', 'has_refund')
 
 
-    def get_date(self, obj):
-        return obj.created_at.strftime('%Y-%m-%d')
     
-    def get_value(self,obj):
-        return float(obj.order_amount.replace(',',''))
-    
-
+   
 
 class OrderItemSerializer(serializers.ModelSerializer):
     product = ProductSerializer()

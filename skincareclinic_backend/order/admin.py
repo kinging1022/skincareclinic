@@ -1,5 +1,5 @@
 from django.contrib import admin
-from .models import Order, OrderItem
+from .models import Order, OrderItem , Refund
 from django.urls import reverse
 from django.utils.safestring import mark_safe
 from django.utils import timezone
@@ -45,3 +45,5 @@ class OrderAdmin(admin.ModelAdmin):
 admin.site.register(Order,OrderAdmin)
 
 admin.site.register(OrderItem)
+
+admin.site.register(Refund)

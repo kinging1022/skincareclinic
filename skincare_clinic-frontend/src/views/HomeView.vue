@@ -1,8 +1,8 @@
 <template>
   <main class="flex-1">
-    <!-- Enhanced Animated Hero Section -->
+    <!-- Enhanced Animated Hero Section without Images -->
     <section class="relative overflow-hidden">
-      <!-- Background Image Carousel -->
+      <!-- Gradient Background with Animation -->
       <div class="absolute inset-0 w-full h-full">
         <transition-group 
           name="fade" 
@@ -13,12 +13,21 @@
             v-for="(slide, index) in heroSlides" 
             :key="slide.id"
             v-show="currentSlide === index"
-            class="absolute inset-0 h-full w-full bg-cover bg-center transition-opacity duration-1000"
-            :style="{
-              backgroundImage: `linear-gradient(rgba(10, 60, 40, 0.55), rgba(10, 60, 40, 0.65)), url(${slide.image})`
-            }"
-          ></div>
+            class="absolute inset-0 h-full w-full transition-opacity duration-1000"
+            :class="slide.gradient"
+          >
+            <!-- SVG Pattern Overlay -->
+            <div class="absolute inset-0 opacity-10">
+              <component :is="slide.pattern" class="h-full w-full text-white"></component>
+            </div>
+          </div>
         </transition-group>
+        
+        <!-- Elegant Moving Line Decoration -->
+        <div class="absolute inset-0">
+          <div class="elegant-line-top"></div>
+          <div class="elegant-line-bottom"></div>
+        </div>
         
         <!-- Subtle Animated Overlay -->
         <div class="absolute inset-0 opacity-20">
@@ -52,6 +61,13 @@
           </h2>
         </div>
         
+        <!-- Animated Decorative Element -->
+        <div class="mb-4 flex justify-center overflow-hidden">
+          <div class="luxury-divider" :class="{'animate-expand': animationStarted}">
+            <SparklesIcon class="h-5 w-5 text-white opacity-80" />
+          </div>
+        </div>
+        
         <!-- Animated Headline -->
         <div class="overflow-hidden mb-4">
           <transition 
@@ -60,7 +76,7 @@
           >
             <h1 
               :key="currentHeadline" 
-              class="max-w-3xl text-4xl font-light tracking-wide md:text-5xl lg:text-6xl drop-shadow-sm"
+              class="max-w-3xl text-4xl font-light tracking-wide md:text-5xl lg:text-6xl drop-shadow-sm luxury-font"
             >
               {{ headlines[currentHeadline] }}
             </h1>
@@ -77,13 +93,14 @@
           </p>
         </div>
         
-        <!-- Animated Button -->
+        <!-- Fixed CTA Button (Always Visible) -->
         <RouterLink 
           to="/shop" 
-          class="rounded-none bg-transparent border border-white px-8 text-white hover:bg-white hover:text-[#0a5c3e] text-base py-4 transition-all duration-300 opacity-0"
+          class="rounded-none bg-transparent border border-white px-8 text-white hover:bg-white hover:text-[#0a5c3e] text-base py-4 transition-all duration-300 opacity-0 flex items-center group"
           :class="{'animate-fade-in-delay': animationStarted}"
         >
-          Shop Collection
+          <span>Shop Collection</span>
+          <ArrowRightIcon class="ml-2 h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1" />
         </RouterLink>
         
         <!-- Slide Indicators -->
@@ -122,7 +139,7 @@
       <div class="container px-4 md:px-6">
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
           <div v-for="(benefit, index) in benefits" :key="index" class="flex flex-col items-center text-center">
-            <div class="mb-4 h-16 w-16 rounded-full border border-[#d7e5dc] bg-white p-4">
+            <div class="mb-4 h-16 w-16 rounded-full border border-[#d7e5dc] bg-white p-4 transform transition-transform hover:scale-105">
               <component :is="benefit.icon" class="h-full w-full text-[#0a5c3e]"></component>
             </div>
             <h3 class="mb-2 text-base font-medium text-[#1c3a2e]">{{ benefit.title }}</h3>
@@ -148,7 +165,10 @@
               placeholder="Your email address"
               class="rounded-none border-[#d7e5dc] bg-white focus:ring-[#0a5c3e] focus:border-[#0a5c3e] outline-none border text-base w-full py-2 px-4"
             />
-            <button class="rounded-none bg-[#0a5c3e] hover:bg-[#0b4a33] text-base text-white px-6 py-2">Subscribe</button>
+            <button class="rounded-none bg-[#0a5c3e] hover:bg-[#0b4a33] text-base text-white px-6 py-2 flex items-center">
+              <span>Subscribe</span>
+              <ArrowRightIcon class="ml-2 h-4 w-4" />
+            </button>
           </div>
         </div>
       </div>
@@ -157,7 +177,7 @@
 </template>
 
 <script>
-import { Leaf, Heart, Recycle } from 'lucide-vue-next'
+import { Leaf, Heart, Recycle, ArrowRight, Sparkles } from 'lucide-vue-next'
 import axios from 'axios'
 import { RouterLink } from 'vue-router'
 import { useCartStore } from '@/stores/cart'
@@ -170,6 +190,38 @@ export default {
     Leaf,
     Heart,
     Recycle,
+    ArrowRightIcon: ArrowRight,
+    SparklesIcon: Sparkles,
+    CirclePattern: {
+      template: `
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <pattern id="circlePattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
+            <circle cx="20" cy="20" r="1" fill="currentColor" />
+          </pattern>
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#circlePattern)" />
+        </svg>
+      `
+    },
+    WavePattern: {
+      template: `
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <pattern id="wavePattern" x="0" y="0" width="100" height="30" patternUnits="userSpaceOnUse">
+            <path d="M0,15 C20,5 35,25 50,15 C65,5 80,25 100,15 L100,30 L0,30 Z" fill="currentColor" opacity="0.3" />
+          </pattern>
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#wavePattern)" />
+        </svg>
+      `
+    },
+    GridPattern: {
+      template: `
+        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
+          <pattern id="gridPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
+            <path d="M20,0 L0,0 L0,20" stroke="currentColor" stroke-width="0.5" fill="none" />
+          </pattern>
+          <rect x="0" y="0" width="100%" height="100%" fill="url(#gridPattern)" />
+        </svg>
+      `
+    },
     RouterLink,
     ScrollableCategories,
     ScrollableProducts
@@ -188,15 +240,18 @@ export default {
       heroSlides: [
         {
           id: 1,
-          image: 'https://images.unsplash.com/photo-1570172619644-dfd03ed5d881?q=80&w=1920&auto=format&fit=crop',
+          gradient: 'bg-gradient-to-r from-[#0a5c3e] to-[#1c3a2e]',
+          pattern: 'CirclePattern'
         },
         {
           id: 2,
-          image: 'https://images.unsplash.com/photo-1598440947619-2c35fc9aa908?q=80&w=1920&auto=format&fit=crop',
+          gradient: 'bg-gradient-to-r from-[#0c4a33] to-[#0a3c28]',
+          pattern: 'WavePattern'
         },
         {
           id: 3,
-          image: 'https://images.unsplash.com/photo-1556228720-195a672e8a03?q=80&w=1920&auto=format&fit=crop',
+          gradient: 'bg-gradient-to-tr from-[#0a3c28] via-[#0b4a33] to-[#0c5c3e]',
+          pattern: 'GridPattern'
         }
       ],
       headlines: [
@@ -237,7 +292,7 @@ export default {
         const response = await axios.get('api/shop/new_arrivals/')
         this.NewArrivals = response.data
       } catch (error) {
-        console.error('Error fetching featured products:', error)
+        console.error('Error fetching new arrivals:', error)
       }
     },
     async getCollections() {
@@ -266,21 +321,12 @@ export default {
       // Reset the slideshow timer when manually changing slides
       clearInterval(this.slideInterval)
       this.startSlideshow()
-    },
-    preloadImages() {
-      this.heroSlides.forEach(slide => {
-        const img = new Image()
-        img.src = slide.image
-      })
     }
   },
   mounted() {
     this.getCollections()
     this.getFeaturedProducts()
     this.getNewArrivals()
-    
-    // Preload images for better performance
-    this.preloadImages()
     
     // Start animations after a short delay
     setTimeout(() => {
@@ -300,6 +346,19 @@ export default {
 </script>
 
 <style scoped>
+/* Import luxury font */
+@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Playfair+Display:wght@400;500&display=swap');
+
+/* Applying luxury font */
+.luxury-font {
+  font-family: 'Playfair Display', serif;
+}
+
+.brand-name {
+  font-family: 'Cormorant Garamond', serif;
+  letter-spacing: 0.3em;
+}
+
 /* Fade transition for slides */
 .fade-enter-active,
 .fade-leave-active {
@@ -402,6 +461,84 @@ export default {
   }
   100% {
     left: 100%;
+  }
+}
+
+/* Elegant moving line decorations */
+.elegant-line-top {
+  position: absolute;
+  top: 40px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: slideLeft 20s infinite linear;
+}
+
+.elegant-line-bottom {
+  position: absolute;
+  bottom: 40px;
+  left: 0;
+  width: 100%;
+  height: 1px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.3) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  animation: slideRight 20s infinite linear;
+}
+
+@keyframes slideLeft {
+  0% {
+    transform: translateX(100%);
+  }
+  100% {
+    transform: translateX(-100%);
+  }
+}
+
+@keyframes slideRight {
+  0% {
+    transform: translateX(-100%);
+  }
+  100% {
+    transform: translateX(100%);
+  }
+}
+
+/* Luxury divider */
+.luxury-divider {
+  position: relative;
+  width: 0;
+  height: 2px;
+  background: linear-gradient(
+    90deg,
+    rgba(255, 255, 255, 0) 0%,
+    rgba(255, 255, 255, 0.8) 50%,
+    rgba(255, 255, 255, 0) 100%
+  );
+  display: flex;
+  align-items: center;
+  justify-content: center;
+}
+
+.animate-expand {
+  animation: expandWidth 1.2s forwards ease-out 0.8s;
+}
+
+@keyframes expandWidth {
+  0% {
+    width: 0;
+  }
+  100% {
+    width: 100px;
   }
 }
 </style>

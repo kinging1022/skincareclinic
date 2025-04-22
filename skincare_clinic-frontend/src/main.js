@@ -6,6 +6,8 @@ import { useUserStore } from './stores/user'
 import App from './App.vue'
 import router from './router'
 import VueConfetti from 'vue-confetti';
+import VueApexCharts from 'vue3-apexcharts'
+
 
 import axios from 'axios'
 
@@ -16,6 +18,7 @@ const app = createApp(App)
 
 app.use(createPinia())
 app.use(VueConfetti);
+app.use(VueApexCharts)
 app.use(router,axios)
 
 // Initialize the store

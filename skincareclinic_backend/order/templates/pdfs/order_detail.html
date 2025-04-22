@@ -1,91 +1,324 @@
 <!DOCTYPE html>
-
 <html>
-    <head>
-        <title>Order Pdf</title>
+<head>
+    <title>Order Invoice - The Skincare Clinic</title>
+    <meta charset="UTF-8">
+    <meta name="viewport" content="width=device-width, initial-scale=1.0">
+    <style type="text/css">
+        /* Base Styles */
+        body {
+            font-family: 'Segoe UI', 'Helvetica Neue', Arial, sans-serif;
+            font-size: 12px;
+            line-height: 1.4;
+            color: #333;
+            margin: 0;
+            padding: 20px;
+        }
 
-        <style type="text/css">
+        /* Header Styles */
+        .header {
+            text-align: center;
+            margin-bottom: 20px;
+            padding-bottom: 15px;
+            border-bottom: 1px solid #eee;
+        }
+
+        .header h1 {
+            font-size: 20px;
+            color: #2c3e50;
+            margin: 0 0 5px 0;
+        }
+
+        .order-number {
+            font-size: 14px;
+            color: #7f8c8d;
+        }
+
+        /* Address Section */
+        .section {
+            margin-bottom: 20px;
+        }
+
+        .section h2 {
+            font-size: 15px;
+            color: #34495e;
+            margin: 0 0 10px 0;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #eee;
+        }
+
+        /* Product Table */
+        .product-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 20px 0;
+            table-layout: fixed;
+        }
+
+        .product-table th {
+            padding: 10px 8px;
+            font-size: 12px;
+            font-weight: bold;
+            background-color: #f8f9fa;
+            border-bottom: 2px solid #ddd;
+            text-transform: uppercase;
+            letter-spacing: 0.5px;
+            text-align: left;
+            word-wrap: break-word;
+        }
+
+        .product-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #eee;
+            vertical-align: top;
+            word-wrap: break-word;
+        }
+
+        /* Column Widths */
+        .col-image {
+            width: 50px;
+        }
+
+        .col-product {
+            width: 40%;
+        }
+
+        .col-price,
+        .col-quantity,
+        .col-total {
+            width: 15%;
+            text-align: right;
+        }
+
+        /* Footer Rows */
+        .footer-row td {
+            padding: 12px 8px;
+            font-weight: bold;
+            background-color: #f8f9fa;
+            border-bottom: 1px solid #ddd;
+        }
+        
+        .footer-spacing {
+            height: 8px;
+            background-color: white;
+        }
+
+        .total-row {
+            border-top: 2px solid #ddd;
+            font-size: 15px;
+            background-color: #e9f7fe !important;
+        }
+        
+        .total-row td {
+            padding: 15px 8px;
+            background-color: #e9f7fe;
+            color: #2980b9;
+            font-weight: 800;
+        }
+
+        .text-right {
+            text-align: right;
+        }
+
+        /* Refund Section */
+        .refund-section {
+            margin-top: 40px;
+            page-break-before: avoid;
+        }
+        
+        .refund-table {
+            width: 100%;
+            border-collapse: collapse;
+            margin: 15px 0;
+            background-color: #fff9f9;
+            border: 1px solid #ffdddd;
+            table-layout: fixed;
+        }
+        
+        .refund-table th {
+            background-color: #ffebee;
+            padding: 10px 8px;
+            text-align: left;
+            border-bottom: 2px solid #ffcdd2;
+            word-wrap: break-word;
+        }
+        
+        .refund-table td {
+            padding: 10px 8px;
+            border-bottom: 1px solid #ffebee;
+            word-wrap: break-word;
+        }
+        
+        .refund-title {
+            color: #c62828;
+            font-size: 16px;
+            margin-bottom: 10px;
+            padding-bottom: 5px;
+            border-bottom: 1px solid #ffcdd2;
+        }
+        
+        .refund-note {
+            background-color: #fff3e0;
+            padding: 15px;
+            border-left: 4px solid #ffa000;
+            margin: 20px 0;
+        }
+
+        /* Responsive Styles */
+        @media screen and (max-width: 600px) {
             body {
+                padding: 10px;
+            }
+            
+            .product-table th,
+            .product-table td,
+            .refund-table th,
+            .refund-table td {
+                padding: 8px 4px;
+                font-size: 11px;
+            }
+            
+            .col-image {
+                width: 40px;
+            }
+            
+            .product-image {
+                width: 30px;
+                height: 30px;
+            }
+            
+            .total-row {
                 font-size: 14px;
             }
-
-            tr.head td,
-            tr.footer td {
-                padding-top: 10px;
-                padding-bottom: 10px;
-                font-size: 18px;
-                font-weight: bold;
-                background-color: #f9f9f9;
+        }
+        
+        @media screen and (max-width: 480px) {
+            .col-image {
+                display: none;
             }
+        }
+    </style>
+</head>
+<body>
+    <div class="header">
+        <h1>The Skincare Clinic</h1>
+        <div class="order-number">Order #{{ order.id }}</div>
+    </div>
 
-            tr.footer td {
-                font-size: 14px;
-            }
+    <div class="section">
+        <h2>Shipping Address</h2>
+        <p>
+            {{ order.full_name }}<br>
+            {{ order.address }}<br>
+            {{ order.email }}<br>
+            {{ order.phone|default_if_none:"" }}
+        </p>
+    </div>
 
-            tr.item td {
-                padding-top: 3px;
-                padding-bottom: 3px;
-                font-size: 14px;
-            }
-        </style>
-    </head>
-
-    <body>
-        <div id="pdf-app" class="wrapper">
-            <h1>Order-number #{{ order.id }}</h1>
-
-            <h2>Shipping address</h2>
-
-            <p>
-                {{ order.full_name }} <br>
-                {{ order.address }}<br>
-                {{ order.email }} 
-            </p>
-
-            <h2>Products</h2>
-
-            <table cellpadding="0" cellspacing="0">
-                <tr class="head">
-                    <td></td>
-                    <td>Name</td>
-                    <td>Price</td>
-                    <td>Quantity</td>
-                    <td>Total</td>
+    <div class="section">
+        <h2>Order Details</h2>
+        <table class="product-table">
+            <thead>
+                <tr>
+                    <th class="col-image"></th>
+                    <th class="col-product">Product</th>
+                    <th class="col-price">Price</th>
+                    <th class="col-quantity">Qty</th>
+                    <th class="col-total">Total</th>
                 </tr>
-
+            </thead>
+            <tbody>
                 {% for item in order.items.all %}
-                    <tr class="item">
-                        <td>
-                            {% if item.product.thumbnail %}
-                                <img src="{{ item.product.get_thumbnail }}" width="40">
+                <tr>
+                    <td class="col-image">
+                        {% if item.product.thumbnail %}
+                        <img src="{{ item.product.get_thumbnail }}" class="product-image">
+                        {% endif %}
+                    </td>
+                    <td class="col-product">
+                        <div class="product-name">
+                            {% if item.product.brand %}
+                            <span class="brand-name">{{ item.product.brand.name }}</span>
                             {% endif %}
-                        </td>
-                        <td>{{ item.product.brand.name }} {{ item.product.name }}</td>
-                        <td>{{ item.product.price }}</td>
-                        <td>{{ item.quantity }}</td>
-                        <td>{{ item.price }}</td>
-                    </tr>
-                {% endfor %}
-
-                {% if order.shipping_fee %}
-                    <tr class="footer">
-                        <td></td>
-                        <td colspan="3">Shipping fee</td>
-                        <td>{{ order.shipping_fee }}</td>
-                    </tr>
-                {% endif %}
-
-                <tr class="footer">
-                    <td></td>
-                    <td colspan="3">Total</td>
-                    <td>{{ order.order_amount_with_shipping }}</td>
+                            {{ item.product.name }}
+                        </div>
+                    </td>
+                    <td class="col-price text-right">
+                        NGN{{ item.product.price }}
+                    </td>
+                    <td class="col-quantity text-right">{{ item.quantity }}</td>
+                    <td class="col-total text-right">
+                        NGN{{ item.price }}
+                    </td>
                 </tr>
+                {% endfor %}
+            </tbody>
+            <tfoot>
+                <tr class="footer-row">
+                    <td colspan="3"></td>
+                    <td class="text-right">Subtotal:</td>
+                    <td class="text-right">
+                        NGN{{ order.order_amount }}
+                    </td>
+                </tr>
+                <tr><td colspan="5" class="footer-spacing"></td></tr>
+                {% if order.shipping_fee %}
+                <tr class="footer-row">
+                    <td colspan="3"></td>
+                    <td class="text-right">Shipping:</td>
+                    <td class="text-right">
+                        NGN{{ order.shipping_fee }}
+                    </td>
+                </tr>
+                <tr><td colspan="5" class="footer-spacing"></td></tr>
+                {% endif %}
+                <tr class="footer-row total-row">
+                    <td colspan="3"></td>
+                    <td class="text-right">Total:</td>
+                    <td class="text-right">
+                        NGN{{ order.order_amount_with_shipping }}
+                    </td>
+                </tr>
+            </tfoot>
+        </table>
+    </div>
 
-            </table>
-
-            <h2>The Skincare Clinic</h2>
-
-            <p>Thanks for ordering from us!</p>
+    {% if order.has_refund %}
+    <div class="refund-section">
+        <h2 class="refund-title">Refund Details</h2>
+        <table class="refund-table">
+            <thead>
+                <tr>
+                    <th style="width:50%">Product</th>
+                    <th style="width:15%">Qty</th>
+                    <th style="width:20%">Amount</th>
+                    <th style="width:15%">Status</th>
+                </tr>
+            </thead>
+            <tbody>
+                {% for refund in order.refunds.all %}
+                <tr>
+                    <td>{{ refund.product }}</td>
+                    <td>{{ refund.quantity }}</td>
+                    <td>NGN{{ refund.price }}</td>
+                    <td>{% if refund.refunded %}Refunded{% else %}Pending{% endif %}</td>
+                </tr>
+                {% endfor %}
+            </tbody>
+        </table>
+        
+        <div class="refund-note">
+            <strong>Refund Notice:</strong> Please contact our customer service at {{ settings.BRAND_EMAIL }} 
+            to process your refund or request for new order sorting
+             as another customer purchased the outlined product before your payment was processed. Include your order number.
+            Note: Refunds are only possible for payments that were successfully processed.
         </div>
-    </body>
+    </div>
+    {% endif %}
+
+    <div class="thank-you">
+        <p>Thank you for your order! We appreciate your business.</p>
+        <p>The Skincare Clinic Team</p>
+    </div>
+</body>
 </html>

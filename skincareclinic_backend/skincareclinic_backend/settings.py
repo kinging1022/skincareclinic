@@ -28,13 +28,14 @@ BASE_DIR = Path(__file__).resolve().parent.parent
 # SECURITY WARNING: keep the secret key used in production secret!
 SECRET_KEY = os.getenv('SECRET_KEY')
 PAYSTACK_SECRET_KEY = os.getenv('PAYSTACK_SECRET_KEY')
+PAYSTACK_BASE_URL = os.getenv('PAYSTACK_BASE_URL')
 
 
 
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['c308-102-89-85-214.ngrok-free.app','127.0.0.1','localhost',
+ALLOWED_HOSTS = ['72d7-197-210-79-123.ngrok-free.app','127.0.0.1','localhost',
 ]
 
 SITE_URL = os.getenv('SITE_URL')

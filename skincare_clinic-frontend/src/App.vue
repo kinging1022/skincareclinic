@@ -3,9 +3,9 @@
     <!-- Header -->
     <header class="sticky top-0 z-50 w-full border-b border-[#d7e5dc] bg-[#f0f5f1]/80 backdrop-blur-sm">
       <div class="container flex h-16 items-center justify-between px-4 lg:h-20">
-        <a href="/" class="flex items-center gap-2">
+        <RouterLink to="/" class="flex items-center gap-2">
           <span class="text-lg font-semibold tracking-wider text-[#1c3a2e] lg:text-xl">SKINCARÈ CLINIC</span>
-        </a>
+        </RouterLink>
         
         <!-- Desktop Navigation -->
         <nav class="hidden gap-4 lg:flex lg:gap-6">
@@ -25,7 +25,7 @@
         <div class="flex items-center gap-3 md:gap-4">
           <!-- Desktop Search -->
           <div class="relative hidden lg:block">
-            <search-icon class="absolute left-2.5 top-2.5 h-4 w-4 text-[#0a5c3e]" />
+            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-[#0a5c3e]" />
             <input
               type="search"
               placeholder="Search products..."
@@ -35,7 +35,7 @@
           
           <!-- Tablet Search -->
           <div class="relative hidden md:block lg:hidden">
-            <search-icon class="absolute left-2.5 top-2.5 h-4 w-4 text-[#0a5c3e]" />
+            <Search class="absolute left-2.5 top-2.5 h-4 w-4 text-[#0a5c3e]" />
             <input
               type="search"
               placeholder="Search..."
@@ -43,9 +43,9 @@
             />
           </div>
           
-          <!-- Cart Icon (all views) -->
+          <!-- Cart Icon -->
           <RouterLink to="/cart" class="relative">
-            <shopping-bag-icon class="h-5 w-5 text-[#1c3a2e]" />
+            <ShoppingBag class="h-5 w-5 text-[#1c3a2e]" />
             <span class="absolute -right-1 -top-1 flex h-4 w-4 items-center justify-center rounded-full bg-[#0a5c3e] text-[10px] font-medium text-white">
               {{ cartItemCount }}
             </span>
@@ -53,12 +53,12 @@
           
           <!-- Mobile-only icons -->
           <RouterLink to="/search" class="md:hidden">
-            <search-icon class="h-5 w-5 text-[#1c3a2e]" />
+            <Search class="h-5 w-5 text-[#1c3a2e]" />
           </RouterLink>
           
           <!-- Mobile Track Order -->
           <RouterLink to="/track-order" class="md:hidden flex items-center justify-center h-8 w-8 rounded-full hover:bg-[#d7e5dc]/50">
-            <truck-icon class="h-5 w-5 text-[#1c3a2e]" />
+            <Truck class="h-5 w-5 text-[#1c3a2e]" />
           </RouterLink>
         </div>
       </div>
@@ -70,37 +70,89 @@
     <!-- Footer -->
     <footer class="border-t border-[#d7e5dc] bg-white py-8 lg:py-12">
       <div class="container px-4">
-        <div class="grid grid-cols-2 gap-6 md:grid-cols-4 md:gap-8">
-          <div v-for="(footerSection, index) in footerSections" :key="index">
-            <h3 class="mb-3 text-sm font-medium text-[#1c3a2e] lg:mb-4 lg:text-base">{{ footerSection.title }}</h3>
-            
-            <!-- Render links if available -->
-            <ul v-if="footerSection.links" class="space-y-2 text-xs text-[#4a6b5d] lg:text-sm">
-              <li v-for="(link, linkIndex) in footerSection.links" :key="linkIndex">
-                <RouterLink :to="link.url" class="hover:text-[#0a5c3e]">
-                  {{ link.label }}
+        <div class="grid grid-cols-1 gap-8 sm:grid-cols-2 md:grid-cols-4 md:gap-8">
+          <!-- Shop Column -->
+          <div>
+            <h3 class="mb-4 text-sm font-medium text-[#1c3a2e] lg:text-base">Shop</h3>
+            <ul class="space-y-3 text-sm text-[#4a6b5d]">
+              <li>
+                <RouterLink to="/shop" class="flex items-center hover:text-[#0a5c3e]">
+                  <ShoppingBag class="mr-2 h-4 w-4" />
+                  All Products
                 </RouterLink>
               </li>
             </ul>
+          </div>
 
-            <!-- Render social icons -->
-            <div v-if="footerSection.social" class="mb-3 flex gap-4 lg:mb-4">
-              <a href="#" class="text-[#4a6b5d] hover:text-[#0a5c3e]">
-                <instagram-icon class="h-5 w-5" />
+          <!-- About Column -->
+          <div>
+            <h3 class="mb-4 text-sm font-medium text-[#1c3a2e] lg:text-base">About</h3>
+            <ul class="space-y-3 text-sm text-[#4a6b5d]">
+              <li>
+                <RouterLink to="/about" class="flex items-center hover:text-[#0a5c3e]">
+                  <Info class="mr-2 h-4 w-4" />
+                  About Us
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink to="/blog" class="flex items-center hover:text-[#0a5c3e]">
+                  <Newspaper class="mr-2 h-4 w-4" />
+                  Blog
+                </RouterLink>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Shipping Column -->
+          <div>
+            <h3 class="mb-4 text-sm font-medium text-[#1c3a2e] lg:text-base">Shipping</h3>
+            <ul class="space-y-3 text-sm text-[#4a6b5d]">
+              <li>
+                <RouterLink to="/track-order" class="flex items-center hover:text-[#0a5c3e]">
+                  <Truck class="mr-2 h-4 w-4" />
+                  Track Order
+                </RouterLink>
+              </li>
+              <li>
+                <RouterLink to="/shipping-policy" class="flex items-center hover:text-[#0a5c3e]">
+                  <PackageCheck class="mr-2 h-4 w-4" />
+                  Shipping Policy
+                </RouterLink>
+              </li>
+            </ul>
+          </div>
+
+          <!-- Connect Column -->
+          <div>
+            <h3 class="mb-4 text-sm font-medium text-[#1c3a2e] lg:text-base">Connect</h3>
+            <div class="mb-6 flex gap-4">
+              <a href="#" class="rounded-full p-2 text-[#4a6b5d] hover:bg-[#f0f5f1] hover:text-[#0a5c3e]">
+                <Instagram class="h-5 w-5" />
               </a>
-              <a href="#" class="text-[#4a6b5d] hover:text-[#0a5c3e]">
-                <facebook-icon class="h-5 w-5" />
+              <a href="#" class="rounded-full p-2 text-[#4a6b5d] hover:bg-[#f0f5f1] hover:text-[#0a5c3e]">
+                <Facebook class="h-5 w-5" />
               </a>
-              <a href="#" class="text-[#4a6b5d] hover:text-[#0a5c3e]">
-                <twitter-icon class="h-5 w-5" />
+              <a href="#" class="rounded-full p-2 text-[#4a6b5d] hover:bg-[#f0f5f1] hover:text-[#0a5c3e]">
+                <Twitter class="h-5 w-5" />
               </a>
             </div>
-
-            <!-- Copyright -->
-            <p v-if="footerSection.copyright" class="text-xs text-[#4a6b5d] lg:text-sm">
-              © {{ currentYear }} SKINCARÈ CLINIC. All rights reserved.
-            </p>
+            
+            <div class="text-sm text-[#4a6b5d]">
+              <p class="mb-2 flex items-center">
+                <Mail class="mr-2 h-4 w-4" />
+                info@skincareclinic.com
+              </p>
+              <p class="flex items-center">
+                <Phone class="mr-2 h-4 w-4" />
+                +234 800 000 0000
+              </p>
+            </div>
           </div>
+        </div>
+
+        <!-- Copyright Section -->
+        <div class="mt-12 border-t border-[#d7e5dc] pt-6 text-center text-sm text-[#4a6b5d]">
+          <p>© {{ currentYear }} SKINCARÈ CLINIC. All rights reserved.</p>
         </div>
       </div>
     </footer>
@@ -110,55 +162,45 @@
 <script>
 import { RouterLink, RouterView } from 'vue-router'
 import { useCartStore } from './stores/cart'
+import { useUserStore } from './stores/user'
 import Toast from './components/Toast.vue'
 import {
-  Search as SearchIcon,
-  ShoppingBag as ShoppingBagIcon,
-  Instagram as InstagramIcon,
-  Facebook as FacebookIcon,
-  Twitter as TwitterIcon,
-  Truck as TruckIcon
+  Search,
+  ShoppingBag,
+  Truck,
+  Info,
+  Newspaper,
+  PackageCheck,
+  Instagram,
+  Facebook,
+  Twitter,
+  Mail,
+  Phone
 } from 'lucide-vue-next'
-import { useUserStore } from './stores/user'
 
 export default {
   name: 'App',
   components: {
-    SearchIcon,
-    ShoppingBagIcon,
-    InstagramIcon,
-    FacebookIcon,
-    TwitterIcon,
-    TruckIcon,
+    RouterLink,
+    RouterView,
     Toast,
-    RouterView
+    Search,
+    ShoppingBag,
+    Truck,
+    Info,
+    Newspaper,
+    PackageCheck,
+    Instagram,
+    Facebook,
+    Twitter,
+    Mail,
+    Phone
   },
   data() {
     return {
       cartStore: useCartStore(),
       userStore: useUserStore(),
-      currentYear: new Date().getFullYear(),
-      footerSections: [
-        {
-          title: "Shop",
-          links: [{ label: "All Products", url: "/shop" }]
-        },
-        {
-          title: "About",
-          links: [{ label: "About Us", url: "/about", }, { label: "Blog", url: "/blog" }]
-        },
-        {
-          title: "Shipping & Tracking",
-          links: [
-            { label: "Track Order", url: "/track-order" }
-          ]
-        },
-        {
-          title: "Connect",
-          social: true,
-          copyright: true
-        }
-      ]
+      currentYear: new Date().getFullYear()
     }
   },
   computed: {

@@ -34,7 +34,8 @@ def process_checkout(full_name, email, address, phone, weight, order_amount, shi
         product = Product.objects.get(id=product_id)
         price = product.price * float(item['quantity'])
         
-        OrderItem.objects.create(order=order, product=product, price=format_price(price), quantity=item['quantity'])
+        OrderItem.objects.create(order=order, product=product, product_name = product.name,
+                                 brand_name= product.brand, category_name = product.category,price=format_price(price), quantity=item['quantity'])
     
     return order.id
 
@@ -42,7 +43,7 @@ def process_checkout(full_name, email, address, phone, weight, order_amount, shi
 
 
 def initialize_paystack_session(email, amount, order_id):
-    url = "https://api.paystack.co/transaction/initialize"
+    url = settings.PAYSTACK_BASE_URL + '/transaction/initialize'
 
     metadata = {
         "order_id": order_id,
@@ -63,3 +64,9 @@ def initialize_paystack_session(email, amount, order_id):
 
     response = requests.post(url, json=session_data, headers=headers)
     return response
+
+
+
+
+    
+

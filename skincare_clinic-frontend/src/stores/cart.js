@@ -15,15 +15,17 @@ export const useCartStore = defineStore('cart', {
         subtotal() {
             return this.items.reduce((total, item) => total + item.price * item.quantity, 0)
         },
-        tax() {
-            return this.subtotal * 0.08 
-        },
+        
         total() {
-            return this.subtotal + this.tax 
+            return this.subtotal 
         },
         totalWeight(state) {
-            return state.items.reduce((total, item) => total + item.weight * item.quantity, 0);
-        },
+            const total = state.items.reduce((total, item) => {
+              const itemWeight = Number(item.weight) || 0
+              return total + (itemWeight * item.quantity)
+            }, 0)
+            return parseFloat(total.toFixed(2))
+          },
         isCartExpired(state) {
             if (!state.timestamp) return false;
             const currentTime = new Date().getTime();
@@ -44,7 +46,7 @@ export const useCartStore = defineStore('cart', {
             const brandName = product.brand?.name || " "; 
             const message = `Added ${brandName} ${product.name} to cart`;
             const toastStore = useToastStore(); 
-            toastStore.showToast(5000, message, "bg-[#0a5c3e]");
+            toastStore.showToast(5000, message, "bg-[#0a5c3e] text-white");
             this.saveCart();
         },
         removeItem(productId) {

@@ -3,59 +3,157 @@
 <head>
     <meta charset="UTF-8">
     <meta name="viewport" content="width=device-width, initial-scale=1.0">
-    <title>Order Confirmation</title>
+    <title>Order Confirmation | The Skincare Clinic</title>
     <style>
+        /* Base Styles */
         body {
             margin: 0;
             padding: 0;
-            font-family: Arial, sans-serif;
-            background-color: #f4f4f4;
-            color: #333333;
-            font-size: 14px;
+            font-family: 'Segoe UI', Roboto, -apple-system, BlinkMacSystemFont, sans-serif;
+            background-color: #f8fafc;
+            color: #1e293b;
             line-height: 1.6;
         }
+        
+        /* Container */
         .container {
             max-width: 600px;
-            margin: 20px auto;
+            margin: 30px auto;
             background-color: #ffffff;
-            box-shadow: 0 2px 5px rgba(0, 0, 0, 0.1);
-            border-radius: 8px;
+            box-shadow: 0 4px 12px rgba(0, 0, 0, 0.08);
+            border-radius: 12px;
             overflow: hidden;
+            border: 1px solid #e2e8f0;
         }
+        
+        /* Header */
         .header {
-            background-color: #059669;
+            background: linear-gradient(135deg, #059669 0%, #10b981 100%);
             color: #ffffff;
             text-align: center;
-            padding: 20px;
-            font-size: 20px;
-            font-weight: bold;
+            padding: 28px 20px;
+            position: relative;
         }
+        
+        .header:after {
+            content: "";
+            position: absolute;
+            bottom: -12px;
+            left: 0;
+            right: 0;
+            height: 12px;
+            background: url('data:image/svg+xml;utf8,<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 1200 120" preserveAspectRatio="none"><path d="M1200 0L0 0 892.25 114.72 1200 0z" fill="%23ffffff"></path></svg>') center top;
+            background-size: 100% 100%;
+        }
+        
+        .header h1 {
+            margin: 0;
+            font-size: 24px;
+            font-weight: 700;
+            letter-spacing: 0.5px;
+        }
+        
+        /* Content */
         .content {
+            padding: 32px;
+        }
+        
+        .order-details {
+            background-color: #f1f5f9;
+            border-radius: 8px;
             padding: 20px;
+            margin-bottom: 28px;
         }
-        .content p {
-            margin: 0 0 10px;
+        
+        .detail-row {
+            display: flex;
+            margin-bottom: 12px;
+            align-items: center;
         }
-        .footer {
-            background-color: #eeeeee;
+        
+        .detail-label {
+            font-weight: 600;
+            color: #64748b;
+            min-width: 120px;
+        }
+        
+        .detail-value {
+            font-weight: 500;
+            color: #1e293b;
+        }
+        
+        .thank-you {
             text-align: center;
-            padding: 16px;
-            font-size: 12px;
-            color: #666666;
+            margin: 28px 0;
         }
+        
+        .thank-you h2 {
+            color: #059669;
+            font-size: 20px;
+            margin-bottom: 16px;
+        }
+        
+        .thank-you p {
+            margin: 12px 0;
+            color: #475569;
+        }
+        
+        .tracking-number {
+            display: inline-block;
+            background-color: #ecfdf5;
+            color: #059669;
+            padding: 8px 16px;
+            border-radius: 20px;
+            font-weight: 600;
+            margin: 10px 0;
+            border: 1px solid #a7f3d0;
+        }
+        
+        /* Footer */
+        .footer {
+            background-color: #f1f5f9;
+            text-align: center;
+            padding: 24px;
+            font-size: 13px;
+            color: #64748b;
+            border-top: 1px solid #e2e8f0;
+        }
+        
         .footer a {
             color: #059669;
             text-decoration: none;
+            font-weight: 600;
+            transition: color 0.2s;
         }
-        .order-details {
-            font-size: 16px;
-            font-weight: bold;
-            color: #333333;
-            margin-bottom: 20px;
+        
+        .footer a:hover {
+            color: #047857;
+            text-decoration: underline;
         }
-        .thank-you {
-            font-size: 16px;
-            color: #555555;
+        
+        .copyright {
+            margin-top: 8px;
+        }
+        
+        /* Responsive */
+        @media (max-width: 640px) {
+            .container {
+                margin: 0;
+                border-radius: 0;
+            }
+            
+            .content {
+                padding: 24px;
+            }
+            
+            .detail-row {
+                flex-direction: column;
+                align-items: flex-start;
+            }
+            
+            .detail-label {
+                margin-bottom: 4px;
+            }
         }
     </style>
 </head>
@@ -63,28 +161,40 @@
     <div class="container">
         <!-- Header -->
         <div class="header">
-            Order Confirmed!
+            <h1>Your Order is Confirmed!</h1>
         </div>
 
         <!-- Content -->
         <div class="content">
             <div class="order-details">
-                <p>Order Number: #{{ order.id }}</p>
-                <p>Order Date: {{ order.created_at|date:"Y-m-d H:i:s" }}</p>
+                <div class="detail-row">
+                    <span class="detail-label">Order Number:</span>
+                    <span class="detail-value">#{{ order.id }}</span>
+                </div>
+                <div class="detail-row">
+                    <span class="detail-label">Order Date:</span>
+                    <span class="detail-value">{{ order.created_at|date:"F j, Y \a\t g:i A" }}</span>
+                </div>
             </div>
             
             <div class="thank-you">
-                <p>Thank you for your purchase!</p>
-                <p>Your order tracking number :{{order.transaction_ref}}</p>
+                <h2>Thank you for your purchase!</h2>
+                <p>We're preparing your order with care.</p>
+                
+                <div class="tracking-number">
+                    Tracking #: {{order.transaction_ref}}
+                </div>
+                
                 <p>Your order receipt is available below.</p>
             </div>
         </div>
 
         <!-- Footer -->
         <div class="footer">
-            &copy; 2025 The Skincare Clinic. All rights reserved.
-            <br>
-            <a href="https://example.com">Visit our website</a>
+            <a href="{{brand_url}}">Visit Our Website</a>
+            <div class="copyright">
+                &copy; 2025 The Skincare Clinic. All rights reserved.
+            </div>
         </div>
     </div>
 </body>
