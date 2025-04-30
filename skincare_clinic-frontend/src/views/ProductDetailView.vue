@@ -21,26 +21,24 @@
       </div>
 
       <div v-else-if="product" class="bg-white rounded-xl shadow-md overflow-hidden border border-emerald-50">
-        <!-- Redesigned grid layout with better responsiveness -->
         <div class="grid grid-cols-1 md:grid-cols-2 gap-0">
-          <!-- Product Image Section - Full width on mobile -->
+          <!-- Product Image Section -->
           <div class="relative w-full">
-            <!-- Removed any potential padding/margin that could create white space -->
             <div class="relative h-[300px] sm:h-[400px] md:h-[450px] lg:h-[500px] w-full">
               <img 
                 class="w-full h-full object-cover" 
                 :src="product.get_image" 
                 :alt="product.name"
                 loading="lazy"
+                @load="imageLoaded"
+                @error="handleImageError"
               />
             </div>
             
-            <!-- Brand Badge -->
             <div v-if="product.brand" class="absolute top-4 left-4 bg-white px-3 py-1 rounded-full text-sm font-medium text-emerald-800 shadow-sm">
               {{ product.brand.name }}
             </div>
             
-            <!-- Stock Badge -->
             <div v-if="product.stock <= 5 && product.stock > 0" 
                 class="absolute top-4 right-4 bg-amber-500 text-white text-xs px-2 py-1 rounded-full font-medium">
               Only {{ product.stock }} left
@@ -64,7 +62,6 @@
               </div>
             </div>
             
-            <!-- Quantity and Add to Cart Section - Always at the bottom -->
             <div class="mt-auto">
               <div class="flex items-center mb-6" v-if="product.stock > 0 && isInCart">
                 <button @click="decreaseQuantity" 
@@ -106,183 +103,151 @@
   </div>
 </template>
 
-<script>
-import axios from 'axios';
-import { useCartStore } from '@/stores/cart';
-import { useToastStore } from '@/stores/toast';
+<script setup>
+import { ref, computed, onMounted } from 'vue'
+import { useRoute, useRouter } from 'vue-router'
 import { ShoppingCartIcon, MinusIcon, PlusIcon, XCircleIcon, ArrowLeftIcon } from 'lucide-vue-next'
+import axios from 'axios'
+import { useCartStore } from '@/stores/cart'
+import { useToastStore } from '@/stores/toast'
 
-export default {
-  name: 'ProductDetail',
-  components: {
-    ShoppingCartIcon,
-    MinusIcon,
-    PlusIcon,
-    XCircleIcon,
-    ArrowLeftIcon
-  },
-  data() {
-    return {
-      product: null,
-      loading: true,
-      error: null,
-      cartStore: useCartStore(),
-      toastStore: useToastStore()
-    }
-  },
-  mounted() {
-    this.getProduct();
-    // Add event listener for image loading
-    window.addEventListener('load', this.handleImagesLoaded);
-  },
-  beforeUnmount() {
-    // Clean up event listener
-    window.removeEventListener('load', this.handleImagesLoaded);
-  },
-  computed: {
-    isInCart() {
-      return this.product && this.cartStore.items.some(item => item.id === this.product.id);
-    },
-    cartQuantity() {
-      if (!this.product) return 0;
-      const cartItem = this.cartStore.items.find(item => item.id === this.product.id);
-      return cartItem ? cartItem.quantity : 0;
-    },
-    buttonClasses() {
-      if (this.product?.stock === 0) {
-        return 'border-gray-300 text-gray-400 cursor-not-allowed';
-      } else if (this.isInCart) {
-        return 'border-emerald-300 bg-emerald-50 text-emerald-800 cursor-default';
-      } else {
-        return 'border-emerald-800 text-emerald-800 hover:bg-emerald-800 hover:text-white';
-      }
-    },
-    cartButtonText() {
-      if (this.product?.stock === 0) {
-        return 'Out of Stock';
-      } else if (this.isInCart) {
-        return 'Added to Cart';
-      } else {
-        return 'Add to Cart';
-      }
-    }
-  },
-  methods: {
-    async getProduct() {
-      const slug = this.$route.params.slug;
-      this.loading = true;
-      this.error = null;
-      
-      try {
-        // Use a timeout to prevent multiple rapid requests
-        const controller = new AbortController();
-        const timeoutId = setTimeout(() => controller.abort(), 10000); // 10 second timeout
-        
-        const response = await axios.get(`/api/shop/products/${slug}/`, {
-          signal: controller.signal
-        });
-        
-        clearTimeout(timeoutId);
-        this.product = response.data;
-      } catch (error) {
-        console.error('Error fetching product:', error);
-        this.error = error.name === 'AbortError' 
-          ? "Request timed out. Please check your connection and try again." 
-          : "Failed to load product. Please try again.";
-      } finally {
-        this.loading = false;
-      }
-    },
-    addToCart() {
-      if (this.product.stock > 0 && !this.isInCart) {
-        this.cartStore.addItem(this.product);
-      }
-    },
-    increaseQuantity() {
-      if (this.cartQuantity < this.product.stock) {
-        this.cartStore.updateQuantity(this.product.id, this.cartQuantity + 1);
-      } else if (this.cartQuantity >= this.product.stock) {
-        this.toastStore.showToast(2000, `Only ${this.product.stock} items available in stock`, "bg-amber-500");
-      }
-    },
-    decreaseQuantity() {
-      if (this.cartQuantity > 1) {
-        this.cartStore.updateQuantity(this.product.id, this.cartQuantity - 1);
-      } else if (this.cartQuantity === 1) {
-        this.cartStore.removeItem(this.product.id);
-        this.toastStore.showToast(2000, `${this.product.name} removed from cart`, "bg-red-500");
-      }
-    },
-    goBack() {
-      this.$router.go(-1);
-    },
-    handleImagesLoaded() {
-      // This helps with layout shifts after images load
-      const images = document.querySelectorAll('img');
-      images.forEach(img => {
-        if (img.complete) {
-          img.classList.add('loaded');
-        } else {
-          img.addEventListener('load', () => {
-            img.classList.add('loaded');
-          });
-        }
-      });
-    }
+const route = useRoute()
+const router = useRouter()
+const cartStore = useCartStore()
+const toastStore = useToastStore()
+
+const product = ref(null)
+const loading = ref(true)
+const error = ref(null)
+
+const getProduct = async () => {
+  const slug = route.params.slug
+  loading.value = true
+  error.value = null
+  
+  try {
+    const response = await axios.get(`/api/shop/products/${slug}/`)
+    product.value = response.data
+  } catch (err) {
+    console.error('Error fetching product:', err)
+    error.value = err.response?.status === 404 
+      ? "Product not found" 
+      : "Failed to load product. Please try again."
+  } finally {
+    loading.value = false
   }
 }
+
+const imageLoaded = (event) => {
+  event.target.classList.add('loaded')
+}
+
+const handleImageError = (event) => {
+  console.error('Image failed to load:', product.value?.get_image)
+  // Optional: Set a fallback image
+  // event.target.src = '/images/placeholder-product.jpg'
+}
+
+const isInCart = computed(() => {
+  return product.value && cartStore.items.some(item => item.id === product.value.id)
+})
+
+const cartQuantity = computed(() => {
+  if (!product.value) return 0
+  const cartItem = cartStore.items.find(item => item.id === product.value.id)
+  return cartItem ? cartItem.quantity : 0
+})
+
+const buttonClasses = computed(() => {
+  if (product.value?.stock === 0) {
+    return 'border-gray-300 text-gray-400 cursor-not-allowed'
+  } else if (isInCart.value) {
+    return 'border-emerald-300 bg-emerald-50 text-emerald-800 cursor-default'
+  } else {
+    return 'border-emerald-800 text-emerald-800 hover:bg-emerald-800 hover:text-white'
+  }
+})
+
+const cartButtonText = computed(() => {
+  if (product.value?.stock === 0) {
+    return 'Out of Stock'
+  } else if (isInCart.value) {
+    return 'Added to Cart'
+  } else {
+    return 'Add to Cart'
+  }
+})
+
+const addToCart = () => {
+  if (product.value.stock > 0 && !isInCart.value) {
+    cartStore.addItem(product.value)
+  }
+}
+
+const increaseQuantity = () => {
+  if (cartQuantity.value < product.value.stock) {
+    cartStore.updateQuantity(product.value.id, cartQuantity.value + 1)
+  } else if (cartQuantity.value >= product.value.stock) {
+    toastStore.showToast(2000, `Only ${product.value.stock} items available in stock`, "bg-amber-500")
+  }
+}
+
+const decreaseQuantity = () => {
+  if (cartQuantity.value > 1) {
+    cartStore.updateQuantity(product.value.id, cartQuantity.value - 1)
+  } else if (cartQuantity.value === 1) {
+    cartStore.removeItem(product.value.id)
+    toastStore.showToast(2000, `${product.value.name} removed from cart`, "bg-red-500")
+  }
+}
+
+const goBack = () => {
+  router.go(-1)
+}
+
+onMounted(() => {
+  getProduct()
+})
 </script>
 
 <style scoped>
-/* Optimize rendering performance */
 img {
-  backface-visibility: hidden;
-  will-change: transform;
-  transform: translateZ(0);
+  opacity: 0;
+  transition: opacity 0.3s ease;
+  width: 100%;
+  height: 100%;
+  object-fit: cover;
 }
 
-/* Smooth transitions for loaded images */
 img.loaded {
-  animation: fadeIn 0.3s ease-in-out;
+  opacity: 1;
 }
 
-@keyframes fadeIn {
-  from { opacity: 0.8; }
-  to { opacity: 1; }
+.animate-spin {
+  will-change: transform;
 }
 
-/* Improve text rendering */
+button {
+  will-change: background-color, color;
+}
+
 h1, h2, p, span, button {
   -webkit-font-smoothing: antialiased;
   -moz-osx-font-smoothing: grayscale;
 }
 
-/* Optimize button transitions */
-button {
-  will-change: background-color, color;
-  transform: translateZ(0);
-}
-
-/* Optimize animations */
-.animate-spin {
-  will-change: transform;
-}
-
-/* Remove any potential white space on smaller screens */
 @media (max-width: 768px) {
   .rounded-xl {
     border-radius: 0.75rem;
     overflow: hidden;
   }
   
-  /* Ensure image container takes full width */
   .relative.w-full {
     width: 100%;
     padding: 0;
     margin: 0;
   }
   
-  /* Ensure image fills container completely */
   .relative.w-full img {
     width: 100%;
     height: 100%;

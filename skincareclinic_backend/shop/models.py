@@ -9,7 +9,7 @@ from imagekit.processors import ResizeToFill
 # Create your models here.
 class Category(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True,editable=False)
     image = models.ImageField(upload_to='categories/',blank=True, null=True)
     thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(300, 300)], format='WEBP', options={'quality': 85})
     class Meta:
@@ -46,7 +46,7 @@ class Category(models.Model):
 
 class Collections(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True,editable=False)
     image = models.ImageField(upload_to='collections/',blank=True, null=True)
     thumbnail = ImageSpecField(source='image', processors=[ResizeToFill(300, 300)], format='WEBP', options={'quality': 85})
     class Meta:
@@ -55,8 +55,8 @@ class Collections(models.Model):
         verbose_name_plural = 'collections'
 
     def save(self, *args, **kwargs):
-        if not self.slug:
-            self.slug = slugify(self.name)
+        if not self.pk or Collections.objects.get(pk=self.pk).name != self.name:
+           self.slug = slugify(self.name)
         super().save(*args, **kwargs)
 
 
@@ -90,7 +90,7 @@ class Brand(models.Model):
         verbose_name_plural = 'brands'
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+        if not self.pk or Brand.objects.get(pk=self.pk).name != self.name:
             self.slug = slugify(self.name)
 
         super().save(*args, **kwargs)
@@ -101,10 +101,10 @@ class Brand(models.Model):
     
 class Product(models.Model):
     name = models.CharField(max_length=200)
-    slug = models.SlugField(max_length=200, unique=True, blank=True)
+    slug = models.SlugField(max_length=200, unique=True, blank=True, editable=False)
     category = models.ForeignKey(Category, on_delete=models.CASCADE, related_name='products', blank=True, null=True)
     brand = models.ForeignKey(Brand, on_delete=models.CASCADE, related_name='products', blank=True, null=True)
-    collection = models.ForeignKey(Collections, on_delete=models.SET_NULL, related_name='products', blank=True, null=True)
+    collection = models.ManyToManyField(Collections,related_name='products', blank=True)
     description = models.TextField(blank=True)
     price = models.PositiveIntegerField()
     image = models.ImageField(upload_to='products/',blank=True, null=True)
@@ -133,7 +133,7 @@ class Product(models.Model):
         return temp_slug
 
     def save(self, *args, **kwargs):
-        if not self.slug:
+        if not self.pk or Product.objects.get(pk=self.pk).name != self.name:
             self.slug = self.generate_slug()
         super().save(*args, **kwargs)
 

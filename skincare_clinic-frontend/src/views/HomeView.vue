@@ -1,149 +1,127 @@
 <template>
   <main class="flex-1">
-    <!-- Enhanced Animated Hero Section without Images -->
-    <section class="relative overflow-hidden">
-      <!-- Gradient Background with Animation -->
-      <div class="absolute inset-0 w-full h-full">
-        <transition-group 
-          name="fade" 
-          tag="div" 
-          class="h-full w-full"
-        >
-          <div 
-            v-for="(slide, index) in heroSlides" 
-            :key="slide.id"
-            v-show="currentSlide === index"
-            class="absolute inset-0 h-full w-full transition-opacity duration-1000"
-            :class="slide.gradient"
-          >
-            <!-- SVG Pattern Overlay -->
-            <div class="absolute inset-0 opacity-10">
-              <component :is="slide.pattern" class="h-full w-full text-white"></component>
-            </div>
+    <!-- Brand Marquee at Top -->
+    <div class="bg-[#0a5c3e] py-3 overflow-hidden border-b border-[#0a5c3e]/20">
+      <div class="marquee-container relative h-12 flex items-center">
+        <div class="marquee-track flex items-center whitespace-nowrap">
+          <div v-for="(brand, index) in brands" :key="index" class="marquee-item mx-6">
+            <span class="text-xl font-light tracking-wider text-white/90 hover:text-white transition-colors duration-300">
+              {{ brand }}
+            </span>
           </div>
-        </transition-group>
-        
-        <!-- Elegant Moving Line Decoration -->
-        <div class="absolute inset-0">
-          <div class="elegant-line-top"></div>
-          <div class="elegant-line-bottom"></div>
+          <!-- Duplicate for seamless looping -->
+          <div v-for="(brand, index) in brands" :key="'copy-'+index" class="marquee-item mx-6">
+            <span class="text-xl font-light tracking-wider text-white/90 hover:text-white transition-colors duration-300">
+              {{ brand }}
+            </span>
+          </div>
         </div>
-        
-        <!-- Subtle Animated Overlay -->
-        <div class="absolute inset-0 opacity-20">
-          <div class="shimmer-effect"></div>
+      </div>
+    </div>
+
+    <!-- Error Display -->
+    <div v-if="error" class="container px-4 py-8 text-red-600">
+      {{ error }}
+    </div>
+
+    <!-- Hero Section -->
+    <section class="relative min-h-[80vh] flex items-center overflow-hidden">
+      <div class="absolute inset-0 bg-[#0a5c3e]/80 md:bg-[#0a5c3e]/50 z-10"></div>
+      <div class="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-[#0a5c3e]/90 via-[#0a5c3e]/70 to-transparent z-10"></div>
+      
+      <div class="absolute inset-0 bg-cover bg-center" 
+           style="background-image: url('/placeholder.svg?height=1080&width=1920');">
+      </div>
+      
+      <div class="container px-4 md:px-8 relative z-20 text-left md:ml-12 lg:ml-24">
+        <div class="max-w-xl">
+          <span class="inline-block mb-4 text-sm tracking-widest uppercase text-[#e3efe7] font-light">
+            Premium Skincare Collection
+          </span>
+          
+          <h1 class="hero-title mb-6 tracking-wide text-white font-extralight">
+            THE SKINCARÈ<br><span class="font-light">CLINIC</span>
+          </h1>
+          
+          <p class="mb-8 text-[#e3efe7] max-w-md leading-relaxed">
+            Discover our curated collections of healthy and authentic skincare products from leading brands worldwide.
+          </p>
+          
+          <div class="flex flex-col sm:flex-row gap-4">
+            <RouterLink 
+              to="/shop" 
+              class="inline-flex items-center justify-center rounded-none bg-[#e3efe7] backdrop-blur-sm px-8 text-[#0a5c3e] hover:bg-white text-base py-4 transition-all duration-300 group shadow-lg"
+              aria-label="Shop our collection"
+            >
+              <span class="font-light tracking-wider">SHOP PRODUCTS</span>
+              <ArrowRightIcon class="ml-2 h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1" />
+            </RouterLink>
+            
+            <RouterLink
+              to="/about" 
+              class="inline-flex items-center justify-center rounded-none bg-transparent border border-[#e3efe7] px-8 text-[#e3efe7] hover:bg-[#e3efe7]/10 text-base py-4 transition-all duration-300 group"
+              aria-label="Learn about our story"
+            >
+              <span class="font-light tracking-wider">ABOUT US</span>
+            </RouterLink>
+          </div>
         </div>
       </div>
       
-      <!-- Content -->
-      <div class="relative flex h-[80vh] w-full flex-col items-center justify-center px-4 text-center text-white">
-        <!-- Animated Brand Logo -->
-        <div class="mb-6 overflow-hidden">
-          <h2 
-            class="brand-name text-lg font-light tracking-[0.25em] md:text-xl"
-            :class="{'animate-reveal': animationStarted}"
-          >
-            <span class="inline-block">S</span>
-            <span class="inline-block">K</span>
-            <span class="inline-block">I</span>
-            <span class="inline-block">N</span>
-            <span class="inline-block">C</span>
-            <span class="inline-block">A</span>
-            <span class="inline-block">R</span>
-            <span class="inline-block">È</span>
-            <span class="inline-block mx-2">•</span>
-            <span class="inline-block">C</span>
-            <span class="inline-block">L</span>
-            <span class="inline-block">I</span>
-            <span class="inline-block">N</span>
-            <span class="inline-block">I</span>
-            <span class="inline-block">C</span>
-          </h2>
-        </div>
-        
-        <!-- Animated Decorative Element -->
-        <div class="mb-4 flex justify-center overflow-hidden">
-          <div class="luxury-divider" :class="{'animate-expand': animationStarted}">
-            <SparklesIcon class="h-5 w-5 text-white opacity-80" />
+      <div class="absolute bottom-8 right-8 hidden md:block z-20">
+        <div class="w-24 h-24 border border-[#e3efe7]/50 rounded-full flex items-center justify-center">
+          <div class="w-20 h-20 border border-[#e3efe7]/70 rounded-full flex items-center justify-center">
+            <div class="w-16 h-16 bg-[#e3efe7]/20 backdrop-blur-sm rounded-full"></div>
           </div>
-        </div>
-        
-        <!-- Animated Headline -->
-        <div class="overflow-hidden mb-4">
-          <transition 
-            name="slide-up" 
-            mode="out-in"
-          >
-            <h1 
-              :key="currentHeadline" 
-              class="max-w-3xl text-4xl font-light tracking-wide md:text-5xl lg:text-6xl drop-shadow-sm luxury-font"
-            >
-              {{ headlines[currentHeadline] }}
-            </h1>
-          </transition>
-        </div>
-        
-        <!-- Animated Tagline -->
-        <div class="overflow-hidden mb-8">
-          <p 
-            class="max-w-md text-base font-light md:text-lg drop-shadow-sm opacity-0"
-            :class="{'animate-fade-in': animationStarted}"
-          >
-            Luxurious formulations crafted with the finest ingredients for timeless beauty
-          </p>
-        </div>
-        
-        <!-- Fixed CTA Button (Always Visible) -->
-        <RouterLink 
-          to="/shop" 
-          class="rounded-none bg-transparent border border-white px-8 text-white hover:bg-white hover:text-[#0a5c3e] text-base py-4 transition-all duration-300 opacity-0 flex items-center group"
-          :class="{'animate-fade-in-delay': animationStarted}"
-        >
-          <span>Shop Collection</span>
-          <ArrowRightIcon class="ml-2 h-5 w-5 transform transition-transform duration-300 group-hover:translate-x-1" />
-        </RouterLink>
-        
-        <!-- Slide Indicators -->
-        <div class="absolute bottom-8 left-0 right-0 flex justify-center space-x-2">
-          <button 
-            v-for="(slide, index) in heroSlides" 
-            :key="slide.id"
-            @click="setSlide(index)"
-            class="h-1 w-12 transition-all duration-300"
-            :class="currentSlide === index ? 'bg-white' : 'bg-white/40'"
-            aria-label="Change slide"
-          ></button>
         </div>
       </div>
     </section>
 
-    <!-- Product Categories - Scrollable -->
-    <ScrollableCategories :categories="collections" />
-
-    <!-- New arrival - Scrollable -->
-    <ScrollableProducts 
-      :products="NewArrivals" 
-      title="New Arrivals" 
-      @add-to-cart="addToCart" 
-    />
-
-    <!-- Featured Products - Scrollable -->
-    <ScrollableProducts 
-      :products="FeaturedProducts" 
-      title="Bestsellers" 
-      @add-to-cart="addToCart" 
-    />
+    <!-- Skeleton Loaders -->
+    <template v-if="loading">
+      <div class="py-12 container px-4">
+        <div class="flex space-x-4 overflow-x-auto pb-4">
+          <div v-for="i in 4" :key="'category-' + i" class="min-w-[200px] h-[150px] bg-gray-200 animate-pulse rounded"></div>
+        </div>
+      </div>
+      <div class="py-12 container px-4">
+        <div class="h-8 w-48 bg-gray-200 animate-pulse mb-6"></div>
+        <div class="flex space-x-4 overflow-x-auto pb-4">
+          <div v-for="i in 4" :key="'product-' + i" class="min-w-[250px] h-[350px] bg-gray-200 animate-pulse rounded"></div>
+        </div>
+      </div>
+    </template>
+    
+    <template v-else>
+      <ScrollableCategories :categories="collections" />
+      <ScrollableProducts 
+        :products="newArrivals" 
+        title="New Arrivals" 
+        @add-to-cart="addToCart"
+      />
+      <ScrollableProducts
+        :products="popularProducts"
+        title="Bestsellers"
+        @add-to-cart="addToCart"
+      />
+    </template>
 
     <!-- Benefits Section -->
     <section class="py-16 bg-[#f0f5f1]">
       <div class="container px-4 md:px-6">
         <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div v-for="(benefit, index) in benefits" :key="index" class="flex flex-col items-center text-center">
-            <div class="mb-4 h-16 w-16 rounded-full border border-[#d7e5dc] bg-white p-4 transform transition-transform hover:scale-105">
-              <component :is="benefit.icon" class="h-full w-full text-[#0a5c3e]"></component>
+          <div
+            v-for="(benefit, index) in benefits"
+            :key="'benefit-' + index"
+            class="flex flex-col items-center text-center min-h-[200px]"
+          >
+            <div class="mb-4 h-16 w-16 min-w-[64px] rounded-full border border-[#d7e5dc] bg-white p-4">
+              <component :is="benefit.icon" class="h-full w-full text-[#0a5c3e]" />
             </div>
-            <h3 class="mb-2 text-base font-medium text-[#1c3a2e]">{{ benefit.title }}</h3>
-            <p class="text-sm text-[#4a6b5d]">
+            <h3 class="mb-2 text-base font-medium text-[#1c3a2e] min-h-[40px] flex items-center justify-center">
+              {{ benefit.title }}
+            </h3>
+            <p class="text-sm text-[#4a6b5d] min-h-[60px] flex items-center">
               {{ benefit.description }}
             </p>
           </div>
@@ -155,390 +133,244 @@
     <section class="bg-[#e3efe7] py-16">
       <div class="container px-4 md:px-6">
         <div class="mx-auto max-w-md text-center">
-          <h2 class="mb-4 text-2xl font-light tracking-wider text-[#1c3a2e]">Join Our Community</h2>
-          <p class="mb-6 text-base text-[#4a6b5d]">
+          <h2 class="mb-4 text-2xl font-light tracking-wider text-[#1c3a2e] min-h-[40px]">
+            Join Our Community
+          </h2>
+          <p class="mb-6 text-base text-[#4a6b5d] min-h-[60px] flex items-center justify-center">
             Subscribe to receive exclusive offers, skincare tips, and early access to new products.
           </p>
-          <div class="flex">
+          <form @submit.prevent="subscribeToNewsletter" class="flex">
             <input
               type="email"
+              v-model="email"
               placeholder="Your email address"
-              class="rounded-none border-[#d7e5dc] bg-white focus:ring-[#0a5c3e] focus:border-[#0a5c3e] outline-none border text-base w-full py-2 px-4"
+              class="flex-1 rounded-none border-[#d7e5dc] bg-white focus:ring-[#0a5c3e] focus:border-[#0a5c3e] outline-none border text-base py-2 px-4 min-w-0"
+              required
+              aria-label="Email address for newsletter"
             />
-            <button class="rounded-none bg-[#0a5c3e] hover:bg-[#0b4a33] text-base text-white px-6 py-2 flex items-center">
+            <button 
+              type="submit" 
+              class="rounded-none bg-[#0a5c3e] hover:bg-[#0b4a33] text-base text-white px-6 py-2 flex items-center min-w-[120px]"
+              aria-label="Subscribe to newsletter"
+            >
               <span>Subscribe</span>
               <ArrowRightIcon class="ml-2 h-4 w-4" />
             </button>
-          </div>
+          </form>
         </div>
       </div>
     </section>
   </main>
 </template>
 
-<script>
-import { Leaf, Heart, Recycle, ArrowRight, Sparkles } from 'lucide-vue-next'
-import axios from 'axios'
-import { RouterLink } from 'vue-router'
-import { useCartStore } from '@/stores/cart'
-import ScrollableCategories from '@/components/ScrollableCategory.vue'
-import ScrollableProducts from '@/components/ScrollableProduct.vue'
+<script setup>
+import { ref, onMounted, defineAsyncComponent } from 'vue';
+import { useCartStore } from '@/stores/cart';
+import { Leaf, Heart, Recycle, ArrowRight as ArrowRightIcon } from 'lucide-vue-next';
+import axios from 'axios';
 
-export default {
-  name: 'HomeView',
-  components: {
-    Leaf,
-    Heart,
-    Recycle,
-    ArrowRightIcon: ArrowRight,
-    SparklesIcon: Sparkles,
-    CirclePattern: {
-      template: `
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <pattern id="circlePattern" x="0" y="0" width="40" height="40" patternUnits="userSpaceOnUse">
-            <circle cx="20" cy="20" r="1" fill="currentColor" />
-          </pattern>
-          <rect x="0" y="0" width="100%" height="100%" fill="url(#circlePattern)" />
-        </svg>
-      `
-    },
-    WavePattern: {
-      template: `
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <pattern id="wavePattern" x="0" y="0" width="100" height="30" patternUnits="userSpaceOnUse">
-            <path d="M0,15 C20,5 35,25 50,15 C65,5 80,25 100,15 L100,30 L0,30 Z" fill="currentColor" opacity="0.3" />
-          </pattern>
-          <rect x="0" y="0" width="100%" height="100%" fill="url(#wavePattern)" />
-        </svg>
-      `
-    },
-    GridPattern: {
-      template: `
-        <svg width="100%" height="100%" xmlns="http://www.w3.org/2000/svg">
-          <pattern id="gridPattern" x="0" y="0" width="20" height="20" patternUnits="userSpaceOnUse">
-            <path d="M20,0 L0,0 L0,20" stroke="currentColor" stroke-width="0.5" fill="none" />
-          </pattern>
-          <rect x="0" y="0" width="100%" height="100%" fill="url(#gridPattern)" />
-        </svg>
-      `
-    },
-    RouterLink,
-    ScrollableCategories,
-    ScrollableProducts
-  },
-  data() {
-    return {
-      cartStore: useCartStore(),
-      collections: [],
-      NewArrivals:[],
-      FeaturedProducts: [],
-      animationStarted: false,
-      currentSlide: 0,
-      currentHeadline: 0,
-      slideInterval: null,
-      headlineInterval: null,
-      heroSlides: [
-        {
-          id: 1,
-          gradient: 'bg-gradient-to-r from-[#0a5c3e] to-[#1c3a2e]',
-          pattern: 'CirclePattern'
-        },
-        {
-          id: 2,
-          gradient: 'bg-gradient-to-r from-[#0c4a33] to-[#0a3c28]',
-          pattern: 'WavePattern'
-        },
-        {
-          id: 3,
-          gradient: 'bg-gradient-to-tr from-[#0a3c28] via-[#0b4a33] to-[#0c5c3e]',
-          pattern: 'GridPattern'
-        }
-      ],
-      headlines: [
-        "Discover the Art of Radiant Skin",
-        "Elevate Your Skincare Ritual",
-        "Unveil Your Natural Luminosity"
-      ],
-      benefits: [
-        {
-          title: "Natural Ingredients",
-          description: "Ethically sourced botanicals and active ingredients for gentle yet effective results.",
-          icon: Leaf
-        },
-        {
-          title: "Cruelty Free",
-          description: "Products never tested on animals and are committed to ethical beauty practices.",
-          icon: Heart
-        },
-        {
-          title: "Sustainable Packaging",
-          description: "Eco-friendly packaging designed to minimize environmental impact.",
-          icon: Recycle
-        }
-      ]
-    }
-  },
-  methods: {
-    async getFeaturedProducts() {
-      try {
-        const response = await axios.get('api/shop/featured_products/')
-        this.FeaturedProducts = response.data
-      } catch (error) {
-        console.error('Error fetching featured products:', error)
-      }
-    },
-    async getNewArrivals() {
-      try {
-        const response = await axios.get('api/shop/new_arrivals/')
-        this.NewArrivals = response.data
-      } catch (error) {
-        console.error('Error fetching new arrivals:', error)
-      }
-    },
-    async getCollections() {
-      try {
-        const response = await axios.get('api/shop/collections/')
-        this.collections = response.data
-      } catch (error) {
-        console.error('Error fetching categories:', error)
-      }
-    },
-    addToCart(product) {
-      this.cartStore.addItem(product)
-    },
-    startSlideshow() {
-      this.slideInterval = setInterval(() => {
-        this.currentSlide = (this.currentSlide + 1) % this.heroSlides.length
-      }, 6000)
-    },
-    startHeadlineRotation() {
-      this.headlineInterval = setInterval(() => {
-        this.currentHeadline = (this.currentHeadline + 1) % this.headlines.length
-      }, 4000)
-    },
-    setSlide(index) {
-      this.currentSlide = index
-      // Reset the slideshow timer when manually changing slides
-      clearInterval(this.slideInterval)
-      this.startSlideshow()
-    }
-  },
-  mounted() {
-    this.getCollections()
-    this.getFeaturedProducts()
-    this.getNewArrivals()
-    
-    // Start animations after a short delay
-    setTimeout(() => {
-      this.animationStarted = true
-    }, 300)
-    
-    // Start the slideshow and headline rotation
-    this.startSlideshow()
-    this.startHeadlineRotation()
-  },
-  beforeUnmount() {
-    // Clear intervals when component is destroyed
-    clearInterval(this.slideInterval)
-    clearInterval(this.headlineInterval)
+// Lazy load components
+const ScrollableCategories = defineAsyncComponent({
+  loader: () => import('@/components/ScrollableCategory.vue'),
+  loadingComponent: {
+    template: `<div class="flex space-x-4 overflow-x-auto pb-4">
+      <div v-for="i in 4" :key="i" class="min-w-[200px] h-[150px] bg-gray-200 animate-pulse rounded"></div>
+    </div>`
   }
-}
+});
+
+const ScrollableProducts = defineAsyncComponent({
+  loader: () => import('@/components/ScrollableProduct.vue'),
+  loadingComponent: {
+    template: `<div class="flex space-x-4 overflow-x-auto pb-4">
+      <div v-for="i in 4" :key="i" class="min-w-[250px] h-[350px] bg-gray-200 animate-pulse rounded"></div>
+    </div>`
+  }
+});
+
+const cartStore = useCartStore();
+const collections = ref([]);
+const newArrivals = ref([]);
+const popularProducts = ref([]);
+const loading = ref(true);
+const email = ref('');
+const error = ref(null);
+
+// Skincare brands for marquee
+const brands = ref([
+  "CeraVe", "La Roche-Posay", "The Ordinary", "Dr. Rashel", 
+  "Olay", "Neutrogena", "Paula's Choice", "Cetaphil",
+  "Eucerin", "Dermalogica", "Kiehl's", "Vichy"
+]);
+
+const benefits = ref([
+  {
+    title: "Natural Ingredients",
+    description: "Ethically sourced botanicals and active ingredients for gentle yet effective results.",
+    icon: Leaf
+  },
+  {
+    title: "Cruelty Free",
+    description: "Products free from harsh chemicals and are committed to ethical beauty practices.",
+    icon: Heart
+  },
+  {
+    title: "Sustainable Packaging",
+    description: "Eco-friendly packaging designed to minimize environmental impact.",
+    icon: Recycle
+  }
+]);
+
+const addToCart = (product) => {
+  cartStore.addItem(product);
+};
+
+const subscribeToNewsletter = async () => {
+  try {
+    await axios.post('/api/newsletter/subscribe', { email: email.value });
+    email.value = '';
+  } catch (err) {
+    console.error('Subscription error:', err);
+  }
+};
+
+const fetchData = async () => {
+  loading.value = true;
+  error.value = null;
+  
+  try {
+    const [collectionsRes, newArrivalsRes, popularRes] = await Promise.all([
+      axios.get('/api/shop/collections/'),
+      axios.get('/api/shop/new_arrivals/'),
+      axios.get('/api/shop/popular_products/')
+    ]);
+    
+    collections.value = collectionsRes.data || [];
+    newArrivals.value = newArrivalsRes.data || [];
+    popularProducts.value = popularRes.data || [];
+  } catch (err) {
+    error.value = 'Failed to load products. Please try again later.';
+    console.error('API Error:', err);
+  } finally {
+    loading.value = false;
+  }
+};
+
+const preloadResources = () => {
+  const resources = [
+    { href: '/fonts/your-font.woff2', as: 'font', type: 'font/woff2', crossorigin: true },
+    { href: '/images/hero-bg.webp', as: 'image' }
+  ];
+
+  resources.forEach(resource => {
+    const link = document.createElement('link');
+    link.rel = 'preload';
+    link.as = resource.as;
+    link.href = resource.href;
+    if (resource.type) link.type = resource.type;
+    if (resource.crossorigin) link.crossOrigin = 'anonymous';
+    document.head.appendChild(link);
+  });
+};
+
+onMounted(() => {
+  // Inject critical CSS
+  const style = document.createElement('style');
+  style.textContent = `
+    .hero-title {
+      font-family: 'HeroFont', -apple-system, BlinkMacSystemFont, sans-serif;
+      font-weight: 300;
+      line-height: 1.2;
+      font-size: clamp(2rem, 6vw, 4.5rem);
+      letter-spacing: 0.05em;
+    }
+    .hero-subtitle {
+      font-size: clamp(0.875rem, 2vw, 1.125rem);
+    }
+    /* Marquee animation */
+    .marquee-container {
+      overflow: hidden;
+    }
+    .marquee-track {
+      animation: marquee 25s linear infinite;
+      display: inline-block;
+    }
+    .marquee-item {
+      display: inline-block;
+    }
+    @keyframes marquee {
+      0% {
+        transform: translateX(0);
+      }
+      100% {
+        transform: translateX(-50%);
+      }
+    }
+  `;
+  document.head.appendChild(style);
+
+  preloadResources();
+  
+  if ('requestIdleCallback' in window) {
+    requestIdleCallback(fetchData, { timeout: 2000 });
+  } else {
+    setTimeout(fetchData, 100);
+  }
+});
 </script>
 
 <style scoped>
-/* Import luxury font */
-@import url('https://fonts.googleapis.com/css2?family=Cormorant+Garamond:wght@300;400;500&family=Playfair+Display:wght@400;500&display=swap');
-
-/* Applying luxury font */
-.luxury-font {
-  font-family: 'Playfair Display', serif;
+/* Optimized animations */
+.animate-pulse {
+  will-change: opacity;
+  animation: pulse 2s cubic-bezier(0.4, 0, 0.6, 1) infinite;
 }
 
-.brand-name {
-  font-family: 'Cormorant Garamond', serif;
-  letter-spacing: 0.3em;
-}
-
-/* Fade transition for slides */
-.fade-enter-active,
-.fade-leave-active {
-  transition: opacity 1s ease;
-}
-.fade-enter-from,
-.fade-leave-to {
-  opacity: 0;
-}
-
-/* Slide up animation for headlines */
-.slide-up-enter-active,
-.slide-up-leave-active {
-  transition: transform 0.8s ease, opacity 0.8s ease;
-}
-.slide-up-enter-from {
-  transform: translateY(20px);
-  opacity: 0;
-}
-.slide-up-leave-to {
-  transform: translateY(-20px);
-  opacity: 0;
-}
-
-/* Brand name animation */
-.brand-name span {
-  display: inline-block;
-  opacity: 0;
-  transform: translateY(20px);
-}
-
-.animate-reveal span {
-  animation: revealLetter 0.5s forwards;
-}
-
-.animate-reveal span:nth-child(1) { animation-delay: 0.1s; }
-.animate-reveal span:nth-child(2) { animation-delay: 0.15s; }
-.animate-reveal span:nth-child(3) { animation-delay: 0.2s; }
-.animate-reveal span:nth-child(4) { animation-delay: 0.25s; }
-.animate-reveal span:nth-child(5) { animation-delay: 0.3s; }
-.animate-reveal span:nth-child(6) { animation-delay: 0.35s; }
-.animate-reveal span:nth-child(7) { animation-delay: 0.4s; }
-.animate-reveal span:nth-child(8) { animation-delay: 0.45s; }
-.animate-reveal span:nth-child(9) { animation-delay: 0.5s; }
-.animate-reveal span:nth-child(10) { animation-delay: 0.55s; }
-.animate-reveal span:nth-child(11) { animation-delay: 0.6s; }
-.animate-reveal span:nth-child(12) { animation-delay: 0.65s; }
-.animate-reveal span:nth-child(13) { animation-delay: 0.7s; }
-.animate-reveal span:nth-child(14) { animation-delay: 0.75s; }
-.animate-reveal span:nth-child(15) { animation-delay: 0.8s; }
-
-@keyframes revealLetter {
-  0% {
-    opacity: 0;
-    transform: translateY(20px);
-  }
-  100% {
-    opacity: 1;
-    transform: translateY(0);
-  }
-}
-
-/* Fade in animations */
-.animate-fade-in {
-  animation: fadeIn 1s ease 1s forwards;
-}
-
-.animate-fade-in-delay {
-  animation: fadeIn 1s ease 1.5s forwards;
-}
-
-@keyframes fadeIn {
-  0% {
-    opacity: 0;
-  }
-  100% {
+@keyframes pulse {
+  0%, 100% {
     opacity: 1;
   }
-}
-
-/* Shimmer effect for luxury feel */
-.shimmer-effect {
-  position: absolute;
-  top: 0;
-  left: -100%;
-  width: 100%;
-  height: 100%;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.1) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: shimmer 8s infinite;
-}
-
-@keyframes shimmer {
-  0% {
-    left: -100%;
-  }
-  100% {
-    left: 100%;
+  50% {
+    opacity: .5;
   }
 }
 
-/* Elegant moving line decorations */
-.elegant-line-top {
-  position: absolute;
-  top: 40px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: slideLeft 20s infinite linear;
+/* CLS improvements */
+[class*="min-h-"] {
+  content-visibility: auto;
 }
 
-.elegant-line-bottom {
-  position: absolute;
-  bottom: 40px;
-  left: 0;
-  width: 100%;
-  height: 1px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.3) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  animation: slideRight 20s infinite linear;
+/* Optimize transitions */
+.transform {
+  will-change: transform;
 }
 
-@keyframes slideLeft {
-  0% {
-    transform: translateX(100%);
-  }
-  100% {
-    transform: translateX(-100%);
-  }
+/* Hero section enhancements */
+.hero-title {
+  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
 }
 
-@keyframes slideRight {
-  0% {
-    transform: translateX(-100%);
+/* Mobile-specific contrast improvements */
+@media (max-width: 767px) {
+  .hero-title {
+    text-shadow: 0 2px 8px rgba(0, 0, 0, 0.4);
   }
-  100% {
-    transform: translateX(100%);
+  [class*="text-[#e3efe7]"] {
+    text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
 }
+</style>
 
-/* Luxury divider */
-.luxury-divider {
-  position: relative;
-  width: 0;
-  height: 2px;
-  background: linear-gradient(
-    90deg,
-    rgba(255, 255, 255, 0) 0%,
-    rgba(255, 255, 255, 0.8) 50%,
-    rgba(255, 255, 255, 0) 100%
-  );
-  display: flex;
-  align-items: center;
-  justify-content: center;
+<style>
+/* Global critical CSS */
+.hero-title {
+  font-family: 'HeroFont', -apple-system, BlinkMacSystemFont, sans-serif;
+  font-weight: 300;
+  line-height: 1.2;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  letter-spacing: 0.05em;
 }
-
-.animate-expand {
-  animation: expandWidth 1.2s forwards ease-out 0.8s;
-}
-
-@keyframes expandWidth {
-  0% {
-    width: 0;
-  }
-  100% {
-    width: 100px;
-  }
+.hero-subtitle {
+  font-size: clamp(0.875rem, 2vw, 1.125rem);
 }
 </style>

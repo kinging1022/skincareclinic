@@ -7,19 +7,22 @@ from rest_framework import status
 from django.db.models import Sum, F, FloatField, Value
 from django.utils.dateparse import parse_date
 from django.db.models.functions import Cast , Replace
-
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_unprocessed_orders(request):
     
-    orders = Order.objects.filter(paid=True, status=Order.RECEIVED)
+    orders = Order.objects.filter(paid=True, status__in=[Order.RECEIVED, Order.PROCESSED])
     serializer = OrderSerializer(orders, many=True)
     return Response(serializer.data, status=status.HTTP_200_OK)
 
 
 @api_view(['GET'])
+@permission_classes([IsAuthenticated])
 def get_analytics(request):
 
 

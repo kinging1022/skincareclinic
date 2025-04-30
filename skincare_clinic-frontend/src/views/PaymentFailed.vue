@@ -13,7 +13,7 @@
         <div class="space-y-4 mb-8">
           <div class="flex justify-between py-3 border-b border-gray-100">
             <span class="text-gray-600">Order Amount</span>
-            <span class="font-semibold text-gray-800">${{ cartStore.total }}</span>
+            <span class="font-semibold text-gray-800">NGN {{ cartStore.total }}</span>
           </div>
           <div class="flex justify-between py-3 border-b border-gray-100">
             <span class="text-gray-600">Error</span>

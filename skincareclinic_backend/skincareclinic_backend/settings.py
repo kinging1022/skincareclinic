@@ -35,7 +35,7 @@ PAYSTACK_BASE_URL = os.getenv('PAYSTACK_BASE_URL')
 # SECURITY WARNING: don't run with debug turned on in production!
 DEBUG = os.getenv('DEBUG')
 
-ALLOWED_HOSTS = ['72d7-197-210-79-123.ngrok-free.app','127.0.0.1','localhost',
+ALLOWED_HOSTS = ['c436-102-90-47-137.ngrok-free.app','127.0.0.1','localhost',
 ]
 
 SITE_URL = os.getenv('SITE_URL')
@@ -90,12 +90,23 @@ CORS_ALLOWED_ORIGINS = [
 
 
 
-
+# JWT settings
 SIMPLE_JWT = {
-    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=10),
+    'ACCESS_TOKEN_LIFETIME': timedelta(minutes=30),
     'REFRESH_TOKEN_LIFETIME': timedelta(days=1),
-    'AUTH_HEADER_TYPES': ('Bearer',),
+    'ROTATE_REFRESH_TOKENS': True,
+    'BLACKLIST_AFTER_ROTATION': True,
 }
+
+REST_FRAMEWORK = {
+    'DEFAULT_AUTHENTICATION_CLASSES': [
+        'rest_framework_simplejwt.authentication.JWTAuthentication',
+    ],
+    # This makes authentication optional by default
+    'DEFAULT_PERMISSION_CLASSES': [],
+}
+
+
 
 INSTALLED_APPS = [
     'django.contrib.admin',

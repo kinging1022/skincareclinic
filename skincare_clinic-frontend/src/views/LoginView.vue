@@ -87,9 +87,8 @@ export default {
       
       if (Object.keys(this.errors).length === 0) {
         try {
-          const response = await axios.post('api/auth/admin/login/', this.formData);
+           await this.userStore.login(this.formData);
 
-          this.userStore.setToken(response.data);
 
           Object.keys(this.formData).forEach((key) => {
             this.formData[key] = "";

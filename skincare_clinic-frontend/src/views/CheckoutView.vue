@@ -78,12 +78,12 @@
                   />
                   <div class="p-3 sm:p-4 border border-[#d7e5dc] rounded-none peer-checked:border-[#0a5c3e] peer-checked:bg-[#f0f5f1] transition-colors">
                     <div class="flex items-center">
-                      <div class="h-5 w-5 rounded-full border-2 border-[#d7e5dc] peer-checked:border-[#0a5c3e] flex items-center justify-center mr-3">
-                        <div class="h-3 w-3 rounded-full bg-[#0a5c3e] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                      <div class="h-5 w-5 rounded-full border-2 border-[#d7e5dc] flex items-center justify-center mr-3">
+                        <div class="h-3 w-3 rounded-full bg-[#0a5c3e]" :class="[deliveryOption === 'pickup' ? 'opacity-100' : 'opacity-0']"></div>
                       </div>
                       <div>
                         <span class="text-[#1c3a2e] font-medium">Pickup</span>
-                        <p class="text-xs sm:text-sm text-[#4a6b5d] mt-1">Send your payment reciept to our IG for pick up details</p>
+                        <p class="text-xs sm:text-sm text-[#4a6b5d] mt-1">Send your payment receipt to our IG for pick up details</p>
                       </div>
                     </div>
                   </div>
@@ -99,8 +99,8 @@
                   />
                   <div class="p-3 sm:p-4 border border-[#d7e5dc] rounded-none peer-checked:border-[#0a5c3e] peer-checked:bg-[#f0f5f1] transition-colors">
                     <div class="flex items-center">
-                      <div class="h-5 w-5 rounded-full border-2 border-[#d7e5dc] peer-checked:border-[#0a5c3e] flex items-center justify-center mr-3">
-                        <div class="h-3 w-3 rounded-full bg-[#0a5c3e] opacity-0 peer-checked:opacity-100 transition-opacity"></div>
+                      <div class="h-5 w-5 rounded-full border-2 border-[#d7e5dc] flex items-center justify-center mr-3">
+                        <div class="h-3 w-3 rounded-full bg-[#0a5c3e]" :class="[deliveryOption === 'delivery' ? 'opacity-100' : 'opacity-0']"></div>
                       </div>
                       <div>
                         <span class="text-[#1c3a2e] font-medium">Home Delivery</span>
@@ -169,19 +169,15 @@
             <div class="p-4 sm:p-6">
               <!-- Order Totals - Adjusted spacing for mobile -->
               <div class="space-y-2 sm:space-y-3">
-
                 <div class="flex justify-between text-sm text-[#4a6b5d]">
                   <span>Weight</span>
                   <span>{{totalWeight}} KG</span>
                 </div>
-
                 
                 <div class="flex justify-between text-sm text-[#4a6b5d]">
                   <span>Subtotal</span>
                   <span>₦{{ total.toLocaleString() }}</span>
                 </div>
-
-                
                 
                 <div class="flex justify-between text-sm text-[#4a6b5d]">
                   <span>Delivery Fee</span>
@@ -223,194 +219,227 @@
   </div>
 </template>
 
-<script>
+<script setup>
+import { ref, computed, onMounted, watch } from 'vue';
+import { useRouter } from 'vue-router';
 import { ArrowRight } from 'lucide-vue-next';
 import { useCartStore } from "@/stores/cart";
 import { useToastStore } from "@/stores/toast";
 import CheckoutModal from "@/components/CheckoutModal.vue";
 import axios from "axios";
 
-export default {
-  data() {
-    return {
-      cartStore: useCartStore(),
-      toastStore: useToastStore(),
-      fullName: "",
-      email: "",
-      address: "",
-      phoneNumber: "",
-      deliveryOption: "pickup",
-      selectedLocation: "",
-      selectedArea: "",
-      locationsCategory: [],
-      locations: [],
-      errors: {},
-      insufficient_products: [],
-      showInsufficientStockModal: false,
-    };
-  },
-  components: {
-    CheckoutModal,
-    ArrowRight
-  },
-  mounted() {
-    this.getLocationsCategory();
-  },
-  computed: {
-    totalWeight() {
-      return this.cartStore.totalWeight;
-    },
-    deliveryFee() {
-      if (this.deliveryOption === "pickup") return 0;
-      const location = this.locations.find((loc) => loc.name === this.selectedArea);
-      return location ? location.price : 0;
-    },
-    total() {
-      return this.cartStore.total;
-    },
-    totalPlusDelivery() {
-      return this.total + this.deliveryFee;
-    },
-  },
-  methods: {
-    async getLocationsCategory() {
-      try {
-        const response = await axios.get("api/delivery_category/");
-        this.locationsCategory = response.data;
-      } catch (error) {
-        this.toastStore.showToast(3000, "Failed to load delivery categories. Please try again.", "bg-red-500");
-      }
-    },
-    async getLocationAndPrice() {
-      if (!this.selectedLocation) {
-        this.locations = [];
-        return;
-      }
-      try {
-        const response = await axios.get("api/delivery_prices/", {
-          params: {
-            category: this.selectedLocation,
-            weight: this.totalWeight,
-          },
-        });
-        this.locations = response.data;
-      } catch (error) {
-        this.toastStore.showToast(3000, "Failed to load delivery prices. Please try again.", "bg-red-500");
-      }
-    },
-    async makePayment() {
-      this.errors = {};
+// Setup stores and router
+const cartStore = useCartStore();
+const toastStore = useToastStore();
+const router = useRouter();
 
-      // Validate Full Name
-      if (!this.fullName) this.errors.fullName = "Full Name is required.";
+// Form state
+const fullName = ref("");
+const email = ref("");
+const address = ref("");
+const phoneNumber = ref("");
+const deliveryOption = ref("pickup");
+const selectedLocation = ref("");
+const selectedArea = ref("");
+const locationsCategory = ref([]);
+const locations = ref([]);
+const errors = ref({});
+const insufficient_products = ref([]);
+const showInsufficientStockModal = ref(false);
+
+// Computed properties
+const totalWeight = computed(() => cartStore.totalWeight);
+
+const deliveryFee = computed(() => {
+  if (deliveryOption.value === "pickup") return 0;
+  const location = locations.value.find((loc) => loc.name === selectedArea.value);
+  return location ? location.price : 0;
+});
+
+const total = computed(() => cartStore.total);
+
+const totalPlusDelivery = computed(() => total.value + deliveryFee.value);
+
+// API methods
+const getLocationsCategory = async () => {
+  try {
+    // Use AbortController for cancellable requests
+    const controller = new AbortController();
+    const signal = controller.signal;
+    
+    const response = await axios.get("api/delivery_category/", { signal });
+    locationsCategory.value = response.data;
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      toastStore.showToast(3000, "Failed to load delivery categories. Please try again.", "bg-red-500");
+    }
+  }
+};
+
+const getLocationAndPrice = async () => {
+  if (!selectedLocation.value) {
+    locations.value = [];
+    return;
+  }
+  
+  try {
+    // Use AbortController for cancellable requests
+    const controller = new AbortController();
+    const signal = controller.signal;
+    
+    const response = await axios.get("api/delivery_prices/", {
+      params: {
+        category: selectedLocation.value,
+        weight: totalWeight.value,
+      },
+      signal
+    });
+    locations.value = response.data;
+  } catch (error) {
+    if (error.name !== 'AbortError') {
+      toastStore.showToast(3000, "Failed to load delivery prices. Please try again.", "bg-red-500");
+    }
+  }
+};
+
+// Validation function
+const isValidEmail = (email) => {
+  const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
+  return regex.test(email);
+};
+
+// Checkout methods
+const makePayment = async () => {
+  errors.value = {};
+
+  // Validate Full Name
+  if (!fullName.value) errors.value.fullName = "Full Name is required.";
+  
+  // Validate Email
+  if (!email.value) {
+    errors.value.email = "Email is required.";
+  } else if (!isValidEmail(email.value)) {
+    errors.value.email = "Please enter a valid email address.";
+  }
+
+  // Validate other fields
+  if (!phoneNumber.value) errors.value.phoneNumber = "Phone Number is required.";
+  if (deliveryOption.value === "delivery") {
+    if (!address.value) errors.value.address = "Address is required.";
+    if (!selectedLocation.value) errors.value.selectedLocation = "Location is required.";
+    if (!selectedArea.value) errors.value.selectedArea = "Delivery option is required.";
+  }
+
+  if (Object.keys(errors.value).length > 0) return;
+
+  const payload = {
+    full_name: fullName.value,
+    email: email.value,
+    address: address.value,
+    phone_number: phoneNumber.value,
+    delivery_option: deliveryOption.value,
+    delivery_location: selectedArea.value,
+    total_weight: totalWeight.value,
+    shipping_fee: deliveryFee.value,
+    total: total.value,
+    total_plus_delivery: totalPlusDelivery.value,
+    items: cartStore.items.map((item) => ({
+      product: item.id,
+      quantity: item.quantity,
+    })),
+  };
+
+  try {
+    const response = await axios.post("api/checkout/", payload);
+    window.location.href = response.data.redirect_url;
+  } catch (error) {
+    if (error.response && error.response.status === 400 && error.response.data.insufficient_products) {
+      insufficient_products.value = error.response.data.insufficient_products;
+      showInsufficientStockModal.value = true;
       
-      // Validate Email
-      if (!this.email) {
-        this.errors.email = "Email is required.";
-      } else if (!this.isValidEmail(this.email)) {
-        this.errors.email = "Please enter a valid email address.";
-      }
-
-      // Validate other fields
-      if (!this.phoneNumber) this.errors.phoneNumber = "Phone Number is required.";
-      if (this.deliveryOption === "delivery") {
-        if (!this.address) this.errors.address = "Address is required.";
-        if (!this.selectedLocation) this.errors.selectedLocation = "Location is required.";
-        if (!this.selectedArea) this.errors.selectedArea = "Delivery option is required.";
-      }
-
-      if (Object.keys(this.errors).length > 0) return;
-
-      const payload = {
-        full_name: this.fullName,
-        email: this.email,
-        address: this.address,
-        phone_number: this.phoneNumber,
-        delivery_option: this.deliveryOption,
-        delivery_location: this.selectedArea,
-        total_weight: this.totalWeight,
-        shipping_fee: this.deliveryFee,
-        total: this.total,
-        total_plus_delivery: this.totalPlusDelivery,
-        items: this.cartStore.items.map((item) => ({
-          product: item.id,
-          quantity: item.quantity,
-        })),
-      };
-
-      try {
-        const response = await axios.post("api/checkout/", payload);
-        window.location.href = response.data.redirect_url;
-      } catch (error) {
-        if (error.response && error.response.status === 400 && error.response.data.insufficient_products) {
-          this.insufficient_products = error.response.data.insufficient_products;
-          this.showInsufficientStockModal = true;
-          this.insufficient_products.forEach(product => {
-            const cartItem = this.cartStore.items.find(item => item.name === product.name);
-            if (cartItem) {
-              this.cartStore.updateStock(cartItem.id, product.stock);
-            }
-          });
-
-          this.toastStore.showToast(5000, "Some products are out of stock. Please remove them from your cart.", 'bg-red-500');
-        } else {
-          const errorMessage = error.response?.data?.error || "An error occurred. Please try again.";
-          this.toastStore.showToast(3000, errorMessage, "bg-red-500 text-white");
-        }
-      }
-    },
-
-    isValidEmail(email) {
-      const regex = /^[a-zA-Z0-9._-]+@[a-zA-Z0-9.-]+\.[a-zA-Z]{2,}$/;
-      return regex.test(email);
-    },
-
-    updateCartAutomatically() {
-      this.insufficient_products.forEach(product => {
-        const cartItem = this.cartStore.items.find(item => item.name === product.name);
-
+      // Update cart items with current stock info
+      insufficient_products.value.forEach(product => {
+        const cartItem = cartStore.items.find(item => item.name === product.name);
         if (cartItem) {
-          if (product.stock === 0) {
-            this.cartStore.removeItem(cartItem.id);
-          } else {
-            this.cartStore.updateQuantity(cartItem.id, Math.min(cartItem.quantity, product.stock));
-          }
+          cartStore.updateStock(cartItem.id, product.stock);
         }
       });
 
-      this.showInsufficientStockModal = false;
-      this.insufficient_products = [];
-      
-      this.toastStore.showToast(
-        3000,
-        "Cart updated based on available stock.",
-        'bg-blue-500'
-      );
-    },
-
-    cancelCheckout() {
-      this.showInsufficientStockModal = false;
-      this.toastStore.showToast(3000, "Please update your cart manually before proceeding.", 'bg-yellow-500');
-      this.$router.push('/cart');
+      toastStore.showToast(5000, "Some products are out of stock. Please remove them from your cart.", 'bg-red-500');
+    } else {
+      const errorMessage = error.response?.data?.error || "An error occurred. Please try again.";
+      toastStore.showToast(3000, errorMessage, "bg-red-500 text-white");
     }
-  },
-  watch: {
-    selectedLocation: "getLocationAndPrice",
-    deliveryOption(newOption) {
-      if (newOption === "pickup") {
-        this.selectedLocation = "";
-        this.selectedArea = "";
-        this.address = ""; // Clear address when switching to pickup
-        delete this.errors.selectedLocation;
-        delete this.errors.selectedArea;
-        delete this.errors.address;
-      }
-    },
-  },
+  }
 };
+
+const updateCartAutomatically = () => {
+  insufficient_products.value.forEach(product => {
+    const cartItem = cartStore.items.find(item => item.name === product.name);
+
+    if (cartItem) {
+      if (product.stock === 0) {
+        cartStore.removeItem(cartItem.id);
+      } else {
+        cartStore.updateQuantity(cartItem.id, Math.min(cartItem.quantity, product.stock));
+      }
+    }
+  });
+
+  showInsufficientStockModal.value = false;
+  insufficient_products.value = [];
+  
+  toastStore.showToast(
+    3000,
+    "Cart updated based on available stock.",
+    'bg-blue-500'
+  );
+};
+
+const cancelCheckout = () => {
+  showInsufficientStockModal.value = false;
+  toastStore.showToast(3000, "Please update your cart manually before proceeding.", 'bg-yellow-500');
+  router.push('/cart');
+};
+
+// Watchers
+watch(selectedLocation, () => {
+  getLocationAndPrice();
+});
+
+watch(deliveryOption, (newOption) => {
+  if (newOption === "pickup") {
+    selectedLocation.value = "";
+    selectedArea.value = "";
+    address.value = ""; 
+    
+    // Clear related errors
+    const newErrors = { ...errors.value };
+    delete newErrors.selectedLocation;
+    delete newErrors.selectedArea;
+    delete newErrors.address;
+    errors.value = newErrors;
+  }
+});
+
+// Initialize component
+onMounted(() => {
+  getLocationsCategory();
+});
 </script>
 
 <style scoped>
+/* Use will-change for optimized animations */
+button, select, input {
+  will-change: transform, opacity;
+}
+
+/* Use hardware acceleration for transitions */
+.transition-colors {
+  backface-visibility: hidden;
+  -webkit-font-smoothing: subpixel-antialiased;
+}
+
 /* Responsive adjustments */
 @media (max-width: 1023px) {
   .lg\:col-span-2, .lg\:col-span-1 {

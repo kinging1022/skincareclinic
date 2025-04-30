@@ -21,7 +21,6 @@
         <div class="mb-6 md:mb-8 flex flex-col items-start justify-between gap-4 sm:flex-row sm:items-center">
           <h2 class="text-2xl font-medium tracking-wider text-[#1c3a2e] md:text-3xl">Discover Our Collection</h2>
           
-          <!-- Restyled filter explanation -->
           <div class="flex items-center gap-3 sm:ml-auto">
             <div class="hidden md:block h-10 w-[1px] bg-[#d7e5dc]"></div>
             <div class="flex items-center">
@@ -196,7 +195,6 @@
       </div>
     </section>
 
-    <!-- Rest of the component remains unchanged -->
     <!-- Products Grid -->
     <div class="container mx-auto px-4 pb-16">
       <!-- Loading State -->
@@ -241,340 +239,198 @@
           </div>
         </div>
         
-        <!-- Pagination Section -->
-        <section class="py-12" v-if="sortedProducts.length > 0">
-          <div class="flex flex-col items-center justify-between gap-6 sm:flex-row">
-            <div class="text-sm font-light text-[#4a6b5d]">
-              Showing {{ paginationStart }} - {{ paginationEnd }} of {{ sortedProducts.length }} products
-            </div>
-            
-            <div class="flex items-center gap-3">
-              <button
-                @click="changePage(1)"
-                :disabled="currentPage === 1"
-                class="rounded-none border border-[#d7e5dc] p-2 text-[#1c3a2e] hover:bg-[#e3efe7] hover:border-[#0a5c3e] disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="First page"
-              >
-                <chevrons-left-icon class="h-4 w-4" />
-              </button>
-              
-              <button
-                @click="changePage(currentPage - 1)"
-                :disabled="currentPage === 1"
-                class="rounded-none border border-[#d7e5dc] p-2 text-[#1c3a2e] hover:bg-[#e3efe7] hover:border-[#0a5c3e] disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Previous page"
-              >
-                <chevron-left-icon class="h-4 w-4" />
-              </button>
-              
-              <div class="flex items-center gap-2">
-                <div v-for="page in visiblePageNumbers" :key="page" class="flex items-center">
-                  <button
-                    v-if="page !== '...'"
-                    @click="changePage(page)"
-                    :class="[
-                      'h-8 w-8 flex items-center justify-center text-sm font-light',
-                      currentPage === page 
-                        ? 'bg-[#0a5c3e] text-white' 
-                        : 'border border-[#d7e5dc] text-[#1c3a2e] hover:bg-[#e3efe7] hover:border-[#0a5c3e]'
-                    ]"
-                  >
-                    {{ page }}
-                  </button>
-                  <span v-else class="px-1 text-[#4a6b5d]">{{ page }}</span>
-                </div>
-              </div>
-              
-              <button
-                @click="changePage(currentPage + 1)"
-                :disabled="currentPage === totalPages"
-                class="rounded-none border border-[#d7e5dc] p-2 text-[#1c3a2e] hover:bg-[#e3efe7] hover:border-[#0a5c3e] disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Next page"
-              >
-                <chevron-right-icon class="h-4 w-4" />
-              </button>
-              
-              <button
-                @click="changePage(totalPages)"
-                :disabled="currentPage === totalPages"
-                class="rounded-none border border-[#d7e5dc] p-2 text-[#1c3a2e] hover:bg-[#e3efe7] hover:border-[#0a5c3e] disabled:opacity-50 disabled:cursor-not-allowed"
-                aria-label="Last page"
-              >
-                <chevrons-right-icon class="h-4 w-4" />
-              </button>
-            </div>
-            
-            <div class="flex items-center gap-3">
-              <span class="text-sm font-light text-[#4a6b5d]">View</span>
-              <select
-                v-model="itemsPerPage"
-                @change="currentPage = 1"
-                class="rounded-none border border-[#d7e5dc] bg-white px-3 py-2 text-[#1c3a2e] focus:ring-[#0a5c3e] focus:border-[#0a5c3e] outline-none text-sm"
-              >
-                <option :value="12">12</option>
-                <option :value="24">24</option>
-                <option :value="36">36</option>
-                <option :value="48">48</option>
-              </select>
-              <span class="text-sm font-light text-[#4a6b5d]">per page</span>
-            </div>
-          </div>
-        </section>
+        <!-- Pagination Component -->
+        <Pagination
+          v-if="sortedProducts.length > 0"
+          :current-page="currentPage"
+          :items-per-page="itemsPerPage"
+          :total-items="sortedProducts.length"
+          @page-change="handlePageChange"
+          @items-per-page-change="handleItemsPerPageChange"
+        />
       </div>
     </div>
   </div>
 </template>
 
-<script>
-import { useCartStore } from '@/stores/cart';
-import { useToastStore } from '@/stores/toast';
+<script setup>
+import { ref, computed, onMounted } from 'vue'
 import { 
   Filter as FilterIcon, 
-  ShoppingBag, 
-  ChevronRight as ChevronRightIcon, 
-  ChevronLeft as ChevronLeftIcon, 
-  ChevronsLeft as ChevronsLeftIcon, 
-  ChevronsRight as ChevronsRightIcon 
+  ShoppingBag
 } from 'lucide-vue-next'
-import ProductCard from '@/components/ProductCard.vue';
-import axios from 'axios';
+import { useCartStore } from '@/stores/cart'
+import { useToastStore } from '@/stores/toast'
+import ProductCard from '@/components/ProductCard.vue'
+import Pagination from '@/components/Pagination.vue'
+import axios from 'axios'
 
-export default {
-  name: 'ShopPage',
-  components: {
-    FilterIcon,
-    ShoppingBag,
-    ProductCard,
-    ChevronRightIcon,
-    ChevronLeftIcon,
-    ChevronsLeftIcon,
-    ChevronsRightIcon
-  },
-  data() {
-    return {
-      products: [],
-      brands: [],
-      categories: [],
-      filters: {
-        brand: '',
-        category: '',
-        minPrice: null,
-        maxPrice: null
-      },
-      sortBy: 'featured',
-      cartStore: useCartStore(),
-      toastStore: useToastStore(),
-      loading: false,
-      error: null,
-      currentPage: 1,
-      itemsPerPage: 12,
-      showFilters: true,
-      bannerBgImage: 'https://via.placeholder.com/1920x1080/0a5c3e/ffffff?text=Skincare+Hero+Image'
-    }
-  },
-  mounted() {
-    this.getProducts();
-    this.getBrands();
-    this.getCategories();
-  },
-  computed: {
-    bannerText() {
-      if (this.filters.category && this.filters.brand) {
-        const brand = this.brands.find(b => b.slug === this.filters.brand);
-        const category = this.categories.find(c => c.slug === this.filters.category);
-        return `${brand ? brand.name : ''} - ${category ? category.name : ''}`;
-      } else if (this.filters.category) {
-        const category = this.categories.find(c => c.slug === this.filters.category);
-        return category ? category.name : '';
-      } else if (this.filters.brand) {
-        const brand = this.brands.find(b => b.slug === this.filters.brand);
-        return brand ? brand.name : '';
-      }
-      return 'Shop Our Collection';
-    },
-    sortedProducts() {
-      let sorted = [...this.products];
-      switch (this.sortBy) {
-        case 'priceLowToHigh':
-          sorted.sort((a, b) => a.price - b.price);
-          break;
-        case 'priceHighToLow':
-          sorted.sort((a, b) => b.price - a.price);
-          break;
-        case 'alphabetical':
-          sorted.sort((a, b) => a.name.localeCompare(b.name));
-          break;
-        default:
-          break;
-      }
-      return sorted;
-    },
-    paginatedProducts() {
-      const start = (this.currentPage - 1) * this.itemsPerPage;
-      const end = start + this.itemsPerPage;
-      return this.sortedProducts.slice(start, end);
-    },
-    totalPages() {
-      return Math.ceil(this.sortedProducts.length / this.itemsPerPage);
-    },
-    paginationStart() {
-      return (this.currentPage - 1) * this.itemsPerPage + 1;
-    },
-    paginationEnd() {
-      return Math.min(this.currentPage * this.itemsPerPage, this.sortedProducts.length);
-    },
-    visiblePageNumbers() {
-      const pages = [];
-      const totalDisplayPages = 5; // Number of page numbers to show
-      
-      if (this.totalPages <= totalDisplayPages) {
-        // If total pages is less than or equal to total display pages, show all pages
-        for (let i = 1; i <= this.totalPages; i++) {
-          pages.push(i);
-        }
-      } else {
-        // Always show first page
-        pages.push(1);
-        
-        let startPage = Math.max(2, this.currentPage - 1);
-        let endPage = Math.min(this.totalPages - 1, this.currentPage + 1);
-        
-        // Adjust if at boundaries
-        if (this.currentPage <= 2) {
-          endPage = 4;
-        } else if (this.currentPage >= this.totalPages - 1) {
-          startPage = this.totalPages - 3;
-        }
-        
-        // Add ellipsis after first page if needed
-        if (startPage > 2) {
-          pages.push('...');
-        }
-        
-        // Add internal pages
-        for (let i = startPage; i <= endPage; i++) {
-          pages.push(i);
-        }
-        
-        // Add ellipsis before last page if needed
-        if (endPage < this.totalPages - 1) {
-          pages.push('...');
-        }
-        
-        // Always show last page
-        pages.push(this.totalPages);
-      }
-      
-      return pages;
-    }
-  },
-  watch: {
-    sortBy() {
-      this.currentPage = 1;
-    },
-    itemsPerPage() {
-      this.currentPage = 1;
-    }
-  },
-  methods: {
-    toggleFilters() {
-      this.showFilters = !this.showFilters;
-    },
-    async getProducts() {
-      this.loading = true;
-      this.error = null;
-      try {
-        const response = await axios.get('api/shop/products/');
-        this.products = response.data;
-      } catch (error) {
-        console.error(error);
-        this.error = "Failed to load products. Please try again.";
-      } finally {
-        this.loading = false;
-      }
-    },
-    async getBrands() {
-      try {
-        const response = await axios.get('api/shop/brands/');
-        this.brands = response.data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async getCategories() {
-      try {
-        const response = await axios.get('api/shop/categories/');
-        this.categories = response.data;
-      } catch (error) {
-        console.error(error);
-      }
-    },
-    async applyFilters() {
-      this.loading = true;
-      this.error = null;
-      this.currentPage = 1;
-      try {
-        const response = await axios.get('api/shop/filter_products/', {
-          params: {
-            ...this.filters,
-            minPrice: this.filters.minPrice || undefined,
-            maxPrice: this.filters.maxPrice || undefined
-          }
-        });
-        this.products = response.data;
-      } catch (error) {
-        console.error(error);
-        this.error = "Failed to update products. Please try again.";
-      } finally {
-        this.loading = false;
-      }
-    },
-    addToCart(product) {
-      this.cartStore.addItem(product);
-    },
-    changePage(page) {
-      if (page >= 1 && page <= this.totalPages) {
-        this.currentPage = page;
-        // Scroll to top of products section
-        window.scrollTo({
-          top: document.querySelector('.container').offsetTop - 100,
-          behavior: 'smooth'
-        });
-      }
-    },
-    resetFilters() {
-      this.filters = {
-        brand: '',
-        category: '',
-        minPrice: null,
-        maxPrice: null
-      };
-      this.sortBy = 'featured';
-      this.currentPage = 1;
-      this.getProducts();
-    }
+// Reactive state
+const products = ref([])
+const brands = ref([])
+const categories = ref([])
+const loading = ref(false)
+const error = ref(null)
+const showFilters = ref(true)
+const currentPage = ref(1)
+const itemsPerPage = ref(12)
+const sortBy = ref('featured')
+const bannerBgImage = ref('https://via.placeholder.com/1920x1080/0a5c3e/ffffff?text=Skincare+Hero+Image')
+
+const filters = ref({
+  brand: '',
+  category: '',
+  minPrice: null,
+  maxPrice: null
+})
+
+// Stores
+const cartStore = useCartStore()
+const toastStore = useToastStore()
+
+// Computed properties
+const bannerText = computed(() => {
+  if (filters.value.category && filters.value.brand) {
+    const brand = brands.value.find(b => b.slug === filters.value.brand)
+    const category = categories.value.find(c => c.slug === filters.value.category)
+    return `${brand ? brand.name : ''} - ${category ? category.name : ''}`
+  } else if (filters.value.category) {
+    const category = categories.value.find(c => c.slug === filters.value.category)
+    return category ? category.name : ''
+  } else if (filters.value.brand) {
+    const brand = brands.value.find(b => b.slug === filters.value.brand)
+    return brand ? brand.name : ''
+  }
+  return 'Shop Our Collection'
+})
+
+const sortedProducts = computed(() => {
+  let sorted = [...products.value]
+  switch (sortBy.value) {
+    case 'priceLowToHigh':
+      sorted.sort((a, b) => a.price - b.price)
+      break
+    case 'priceHighToLow':
+      sorted.sort((a, b) => b.price - a.price)
+      break
+    case 'alphabetical':
+      sorted.sort((a, b) => a.name.localeCompare(b.name))
+      break
+    default:
+      break
+  }
+  return sorted
+})
+
+const paginatedProducts = computed(() => {
+  const start = (currentPage.value - 1) * itemsPerPage.value
+  const end = start + itemsPerPage.value
+  return sortedProducts.value.slice(start, end)
+})
+
+// Methods
+const toggleFilters = () => {
+  showFilters.value = !showFilters.value
+}
+
+const getProducts = async () => {
+  loading.value = true
+  error.value = null
+  try {
+    const response = await axios.get('api/shop/products/')
+    products.value = response.data
+  } catch (err) {
+    console.error(err)
+    error.value = "Failed to load products. Please try again."
+  } finally {
+    loading.value = false
   }
 }
+
+const getBrands = async () => {
+  try {
+    const response = await axios.get('api/shop/brands/')
+    brands.value = response.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const getCategories = async () => {
+  try {
+    const response = await axios.get('api/shop/categories/')
+    categories.value = response.data
+  } catch (err) {
+    console.error(err)
+  }
+}
+
+const applyFilters = async () => {
+  loading.value = true
+  error.value = null
+  currentPage.value = 1
+  try {
+    const response = await axios.get('api/shop/filter_products/', {
+      params: {
+        ...filters.value,
+        minPrice: filters.value.minPrice || undefined,
+        maxPrice: filters.value.maxPrice || undefined
+      }
+    })
+    products.value = response.data
+  } catch (err) {
+    console.error(err)
+    error.value = "Failed to update products. Please try again."
+  } finally {
+    loading.value = false
+  }
+}
+
+const addToCart = (product) => {
+  cartStore.addItem(product)
+}
+
+const handlePageChange = (page) => {
+  currentPage.value = page
+  window.scrollTo({
+    top: document.querySelector('.container').offsetTop - 100,
+    behavior: 'smooth'
+  })
+}
+
+const handleItemsPerPageChange = (value) => {
+  itemsPerPage.value = value
+  currentPage.value = 1
+}
+
+const resetFilters = () => {
+  filters.value = {
+    brand: '',
+    category: '',
+    minPrice: null,
+    maxPrice: null
+  }
+  sortBy.value = 'featured'
+  currentPage.value = 1
+  getProducts()
+}
+
+// Lifecycle hooks
+onMounted(() => {
+  getProducts()
+  getBrands()
+  getCategories()
+})
 </script>
 
 <style scoped>
 .product-item {
   transition: transform 0.3s ease;
+  will-change: transform;
 }
 
 .product-item:hover {
   transform: translateY(-5px);
-}
-
-/* Improve scrolling behavior */
-html {
-  scroll-behavior: smooth;
-}
-
-/* Custom focus styles */
-button:focus, select:focus, input:focus {
-  outline: none;
-  box-shadow: 0 0 0 2px rgba(10, 92, 62, 0.4);
 }
 
 /* Improve loading spinner */
@@ -586,5 +442,20 @@ button:focus, select:focus, input:focus {
 
 .animate-spin {
   animation: spin 1s linear infinite;
+}
+
+/* CLS improvements */
+[class*="min-h-"] {
+  content-visibility: auto;
+}
+
+/* Optimize transitions */
+.transform {
+  will-change: transform;
+}
+
+/* Performance optimizations */
+.container {
+  content-visibility: auto;
 }
 </style>

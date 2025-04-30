@@ -7,10 +7,11 @@ from shop.serializers import ProductSerializer
 
 class OrderSerializer(serializers.ModelSerializer):
     created_at = serializers.DateTimeField(format='%Y-%m-%d', read_only =True)
+    shipped_date =  serializers.DateField(format='%Y-%m-%d', read_only =True)
 
     class Meta:
         model = Order
-        fields = ('id','full_name','created_at','order_amount','paid','status', 'has_refund')
+        fields = ('id','full_name','created_at','order_amount','paid','status', 'shipped_date', 'has_refund')
 
 
     

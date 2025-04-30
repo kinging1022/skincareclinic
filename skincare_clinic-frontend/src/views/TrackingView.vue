@@ -1,66 +1,110 @@
 <template>
-  <div class="min-h-screen bg-gray-100">
-    <main class="container mx-auto px-4 py-8">
-      <div class="bg-white rounded-lg shadow-md p-6 max-w-md mx-auto">
+  <div class="min-h-screen bg-[#f8faf8]">
+    <main class="container mx-auto px-4 py-12 md:py-16">
+      <!-- Tracking Card -->
+      <div class="bg-white rounded-lg shadow-sm border border-[#e0eae3] p-6 md:p-8 max-w-md mx-auto">
+        <!-- Header -->
+        <div class="mb-8 text-center">
+          <h1 class="text-2xl md:text-3xl font-light text-[#1c3a2e] mb-2 tracking-wide">Track Your Order</h1>
+          <p class="text-[#4a6b5d] text-sm">Enter your tracking number below</p>
+        </div>
+
+        <!-- Tracking Form -->
         <form @submit.prevent="trackOrder" class="mb-8">
-          <div class="flex flex-col">
+          <div class="relative">
             <input
               v-model="trackingNumber"
               type="text"
-              placeholder="Enter your tracking number"
-              class="w-full px-4 py-2 mb-4 border border-gray-300 rounded-md focus:outline-none focus:ring-2 focus:ring-[#2E8B57] focus:border-transparent"
+              placeholder="TRK-12345678"
+              class="w-full px-5 py-3 border-b border-[#d7e5dc] focus:border-[#0a5c3e] text-[#1c3a2e] placeholder-[#9ab5a7] focus:outline-none bg-transparent transition-colors duration-300"
               required
             />
             <button
               type="submit"
-              class="w-full px-6 py-2 bg-[#2E8B57] text-white rounded-md hover:bg-[#267346] focus:outline-none focus:ring-2 focus:ring-[#2E8B57] focus:ring-opacity-50"
+              class="absolute right-0 top-0 h-full px-4 text-[#0a5c3e] hover:text-[#0b4a33] focus:outline-none"
+              aria-label="Track order"
             >
-              Track
+              <Search class="w-6 h-6" />
             </button>
           </div>
         </form>
 
-        <div v-if="orderStatus !== null" class="mb-8">
-          <div class="space-y-6">
-            <div
-              v-for="(stage, index) in stages"
-              :key="index"
-              class="flex items-center"
-            >
+        <!-- Tracking Progress -->
+        <div v-if="order" class="mb-8">
+          <div class="relative">
+            <!-- Progress line -->
+            <div class="absolute left-4 top-0 h-full w-0.5 bg-[#e3efe7] z-0"></div>
+            
+            <div class="space-y-8 relative z-10">
               <div
-                :class="[
-                  'w-8 h-8 rounded-full border-4 flex items-center justify-center mr-4',
-                  orderStatus >= index
-                    ? 'bg-[#2E8B57] border-[#2E8B57]'
-                    : 'bg-white border-gray-300'
-                ]"
+                v-for="(stage, index) in stages"
+                :key="index"
+                class="flex items-start"
               >
-                <Check
-                  v-if="orderStatus >= index"
-                  class="w-5 h-5 text-white"
-                />
+                <div
+                  :class="[
+                    'w-8 h-8 rounded-full flex items-center justify-center mr-4 mt-0.5 flex-shrink-0 border-2',
+                    order.status >= index
+                      ? 'bg-[#0a5c3e] border-[#0a5c3e]'
+                      : 'bg-white border-[#d7e5dc]'
+                  ]"
+                >
+                  <span v-if="order.status < index" class="text-xs text-[#9ab5a7]">{{ index + 1 }}</span>
+                  <Check v-else class="w-4 h-4 text-white" stroke-width="3" />
+                </div>
+                <div>
+                  <span class="block text-sm font-medium text-[#1c3a2e]">
+                    {{ stage.label }}
+                  </span>
+                  <span v-if="order.status === index && stage.dateField && order[stage.dateField]" 
+                        class="block text-xs text-[#7a9b8a] mt-1">
+                    {{ formatDate(order[stage.dateField]) }}
+                  </span>
+                </div>
               </div>
-              <span class="text-sm font-medium text-gray-700">
-                {{ stage }}
-              </span>
             </div>
           </div>
         </div>
 
-        <div v-if="orderStatus !== null" class="mb-8">
-          <h2 class="text-xl font-semibold mb-4">Order Details</h2>
-          <div class="bg-gray-50 p-4 rounded-md">
-            <p class="mb-2">
-              <strong>Order Number:</strong> #{{ trackingNumber }}
-            </p>
-            <p class="mb-2">
-              <strong>Status:</strong> {{ stages[orderStatus] }}
-            </p>
+        <!-- Order Details -->
+        <div v-if="order" class="mb-8">
+          <div class="p-5 bg-[#f5f9f6] rounded-lg">
+            <h3 class="text-sm font-medium text-[#4a6b5d] uppercase tracking-wider mb-3">Order Summary</h3>
+            <div class="grid grid-cols-2 gap-y-2 text-sm">
+              <div class="text-[#7a9b8a]">Order Number:</div>
+              <div class="text-[#1c3a2e] font-medium">{{ order.id }}</div>
+              
+              <div class="text-[#7a9b8a]">Customer:</div>
+              <div class="text-[#1c3a2e] font-medium">{{ order.full_name }}</div>
+              
+              <div class="text-[#7a9b8a]">Order Amount:</div>
+              <div class="text-[#1c3a2e] font-medium">₦{{ order.order_amount.toLocaleString() }}</div>
+              
+              <div class="text-[#7a9b8a]">Status:</div>
+              <div class="text-[#1c3a2e] font-medium capitalize">{{ stages[order.status].label }}</div>
+            </div>
           </div>
         </div>
 
-        <div v-if="error" class="mb-8 text-red-600">
-          {{ error }}
+        <!-- Error Message -->
+        <div v-if="error" class="mb-6 p-4 bg-[#fff5f5] rounded-lg border border-[#fed7d7]">
+          <div class="flex items-start">
+            <div class="flex-shrink-0 text-[#f56565] mr-3">
+              <AlertCircle class="w-5 h-5" />
+            </div>
+            <div class="text-sm text-[#9b2c2c]">{{ error }}</div>
+          </div>
+        </div>
+
+        <!-- Shipping Policy Link -->
+        <div class="pt-5 border-t border-[#e3efe7] text-center">
+          <router-link 
+            to="/shipping-policy" 
+            class="inline-flex items-center text-xs text-[#7a9b8a] hover:text-[#0a5c3e] transition-colors duration-200 group"
+          >
+            <span>Shipping Policy</span>
+            <ChevronRight class="w-4 h-4 ml-1 transform transition-transform duration-200 group-hover:translate-x-1" />
+          </router-link>
         </div>
       </div>
     </main>
@@ -68,36 +112,52 @@
 </template>
 
 <script>
+import { Search, Check, AlertCircle, ChevronRight } from 'lucide-vue-next';
 import axios from 'axios';
-import { ArrowLeft, Check } from 'lucide-vue-next';
 
 export default {
   name: 'OrderTracking',
   components: {
-    ArrowLeft,
+    Search,
     Check,
+    AlertCircle,
+    ChevronRight
   },
   data() {
     return {
       trackingNumber: '',
-      orderStatus: null,
+      order: null,
       error: '',
-      stages: ['Order Received', 'Order Processed', 'Order Sent'],
+      stages: [
+        { label: 'Order Received', dateField: 'created_at' },
+        { label: 'Processing', dateField: null },
+        { label: 'Shipped', dateField: 'shipped_date' },
+      ],
     };
   },
   methods: {
+    formatDate(dateString) {
+      if (!dateString) return '';
+      const date = new Date(dateString);
+      return date.toLocaleDateString('en-US', { 
+        year: 'numeric', 
+        month: 'short', 
+        day: 'numeric',
+      });
+    },
     async trackOrder() {
       this.error = '';
+      this.order = null;
 
       if (this.trackingNumber) {
         try {
-          const order = await axios.post('api/track_order/', {
+          const response = await axios.post('api/track_order/', {
             tracking: this.trackingNumber,
           });
-          this.orderStatus = order.data.status;
+          this.order = response.data;
         } catch (error) {
           this.error = 'Invalid tracking number. Please try again.';
-          this.orderStatus = null;
+          console.error('Tracking error:', error);
         }
       }
     },
@@ -105,3 +165,14 @@ export default {
 };
 </script>
 
+<style scoped>
+/* Custom input focus effect */
+input:focus {
+  box-shadow: 0 1px 0 0 #0a5c3e;
+}
+
+/* Smooth number appearance in progress circles */
+span {
+  transition: opacity 0.3s ease;
+}
+</style>

@@ -1,33 +1,38 @@
-import { defineStore } from 'pinia'
+import { defineStore } from 'pinia';
+import { ref } from 'vue';
 
-export const useToastStore = defineStore({
-    id: 'toast',
+export const useToastStore = defineStore('toast', () => {
+    const ms = ref(0);
+    const message = ref('');
+    const classes = ref('');
+    const isVisible = ref(false);
 
-    state: () => ({
-        ms: 0,
-        message: '',
-        classes: '',
-        isVisible: false
-    }),
+    function showToast(duration, newMessage, newClasses) {
+        ms.value = parseInt(duration) || 3000; // fallback to 3s if invalid
+        message.value = newMessage || '';
+        classes.value = newClasses || '';
+        isVisible.value = true;
 
-    actions: {
-        showToast(ms, message, classes) {
-            this.ms = parseInt(ms)
-            this.message = message
-            this.classes = classes
-            this.isVisible = true
+        setTimeout(() => {
+            classes.value += ' -translate-y-28';
+        }, 10);
 
-            setTimeout(() => {
-                this.classes += ' -translate-y-28'
-            }, 10)
+        setTimeout(() => {
+            if (typeof classes.value === 'string') {
+                classes.value = classes.value.replace('-translate-y-28', '');
+            }
+        }, ms.value - 500);
 
-            setTimeout(() => {
-                this.classes = this.classes.replace('-translate-y-28', '')
-            }, this.ms - 500)
-
-            setTimeout(() => {
-                this.isVisible = false
-            }, this.ms)
-        }
+        setTimeout(() => {
+            isVisible.value = false;
+        }, ms.value);
     }
-})
+
+    return {
+        ms,
+        message,
+        classes,
+        isVisible,
+        showToast,
+    };
+});

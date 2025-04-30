@@ -1,14 +1,11 @@
 <template>
   <main class="flex-1">
-    <!-- Hero Section -->
-    <section class="relative">
-      <div
-        class="flex h-[70vh] w-full flex-col items-center justify-center bg-cover bg-center px-4 text-center text-white"
-        :style="{
-          backgroundImage:
-            'linear-gradient(rgba(10, 60, 40, 0.65), rgba(10, 60, 40, 0.65)), url(' + blogHeroImage + ')'
-        }"
-      >
+    <!-- Hero Section with solid color background -->
+    <section class="relative bg-[#0a5c3e]">
+      <div class="flex h-[70vh] w-full flex-col items-center justify-center px-4 text-center text-white">
+        <div class="mb-8">
+          <Flower2 class="h-16 w-16 mx-auto text-[#e3efe7]" />
+        </div>
         <h1 class="mb-4 max-w-3xl text-4xl font-light tracking-wide md:text-5xl lg:text-6xl drop-shadow-sm">
           The Science of Beautiful Skin
         </h1>
@@ -99,18 +96,18 @@
 </template>
 
 <script>
-import { PenLine, FlaskConical, Gem } from 'lucide-vue-next'
+import { PenLine, FlaskConical, Gem, Flower2 } from 'lucide-vue-next'
 
 export default {
   name: 'BlogView',
   components: {
     PenLine,
     FlaskConical,
-    Gem
+    Gem,
+    Flower2
   },
   data() {
     return {
-      blogHeroImage: 'https://images.unsplash.com/photo-1498843053639-170ff2715e72?ixlib=rb-4.0.3&ixid=M3wxMjA3fDB8MHxwaG90by1wYWdlfHx8fGVufDB8fHx8fA%3D%3D&auto=format&fit=crop&w=2070&q=80',
       countdown: [
         { value: '2', label: 'Weeks' },
         { value: '3', label: 'Days' },

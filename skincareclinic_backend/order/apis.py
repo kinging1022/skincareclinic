@@ -1,12 +1,16 @@
 from rest_framework.decorators import api_view
 from rest_framework.response import Response
+from rest_framework.permissions import IsAuthenticated
+from rest_framework.decorators import permission_classes
 from rest_framework import status
 from shop.models import Product
 from .models import Order
+from .serializers import OrderSerializer
 from delivery.models import Delivery
 from .utils import process_checkout
 from .utils import initialize_paystack_session
 import logging
+from django.utils import timezone
 import re
 
 logger = logging.getLogger(__name__)
@@ -30,8 +34,10 @@ def track_order(request):
         order = Order.objects.get(transaction_ref=tracking)
     except Order.DoesNotExist:
         return Response({'error': 'Order does not exist'}, status=status.HTTP_404_NOT_FOUND)
+    
+    serializer = OrderSerializer(order)
 
-    return Response({'status': order.status})
+    return Response(serializer.data,status=status.HTTP_200_OK)
 
 def validate_email(email):
     return re.match(EMAIL_REGEX, email) is not None
@@ -197,3 +203,74 @@ def checkout(request):
         )
 
 
+
+
+@api_view(['POST'])
+@permission_classes([IsAuthenticated])
+def update_order_status(request):
+    order_id = request.data.get('id')
+    action = request.data.get('action')
+
+    if not order_id or not action:
+        return Response(
+            {'error': 'Both order ID and action are required'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        order = Order.objects.get(id=order_id)
+    except Order.DoesNotExist:
+        return Response(
+            {'error': 'Order not found'},
+            status=status.HTTP_404_NOT_FOUND
+        )
+
+    # Define status transitions
+    status_transitions = {
+        'set_processed': {
+            'new_status': Order.PROCESSED,
+            'valid_current_statuses': [Order.RECEIVED],
+            'actions': lambda o: None  # No additional actions needed
+        },
+        'set_shipped': {
+            'new_status': Order.SENT,
+            'valid_current_statuses': [Order.PROCESSED],
+            'actions': lambda o: [
+                setattr(o, 'shipped_date', timezone.now()),  # Correct way to set attribute
+                o.send_order_sent()
+            ]
+        }
+    }
+
+    if action not in status_transitions:
+        return Response(
+            {'error': 'Invalid action'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    transition = status_transitions[action]
+    if (transition.get('valid_current_statuses') and 
+        (order.status not in transition['valid_current_statuses'])):
+        return Response(
+            {'error': f'Order must be in {transition["valid_current_statuses"]} to perform this action'},
+            status=status.HTTP_400_BAD_REQUEST
+        )
+
+    try:
+        order.status = transition['new_status']
+        if transition['actions'](order):  # Execute additional actions
+            pass
+        order.save()
+        
+        return Response(
+            {
+                'message': f'Order status updated to {order.get_status_display()}',
+                'new_status': order.status
+            },
+            status=status.HTTP_200_OK
+        )
+    except Exception as e:
+        return Response(
+            {'error': str(e)},
+            status=status.HTTP_500_INTERNAL_SERVER_ERROR
+        )

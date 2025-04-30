@@ -10,5 +10,6 @@ urlpatterns = [
     path('hooks/',webhooks.paystack_webhook, name='paystack_webhook'),
     path('track_order/', apis.track_order, name='track_order'),
     path('admin_order_pdf/<int:order_id>/',admin_order_pdf, name="admin_order_pdf"),
+    path('update_order_status/', apis.update_order_status, name='update_order_status'),
 
 ]

@@ -1,17 +1,9 @@
 import { createRouter, createWebHistory } from 'vue-router'
-import HomeView from '../views/HomeView.vue'
-import ShopView from '@/views/ShopView.vue'
-import ProductDetailView from '@/views/ProductDetailView.vue'
-import CartView from '@/views/CartView.vue'
-import TrackingView from '@/views/TrackingView.vue'
-import CheckoutView from '@/views/CheckoutView.vue'
-import PaymentSuccess from '@/views/PaymentSuccess.vue'
-import PaymentFailed from '@/views/PaymentFailed.vue'
-import BlogView from '@/views/BlogView.vue'
-import AnalyticsView from '@/views/AnalyticsView.vue'
-import SearchView from '@/views/SearchView.vue'
-import LoginView from '@/views/LoginView.vue'
-import Collections from '@/views/Collections.vue'
+import { useUserStore } from '@/stores/user'
+
+
+// Track preloaded components to avoid duplicate loading
+const preloadedComponents = new Set()
 
 const router = createRouter({
   history: createWebHistory(import.meta.env.BASE_URL),
@@ -19,88 +11,229 @@ const router = createRouter({
     {
       path: '/',
       name: 'home',
-      component: HomeView,
+      component: () => import(/* webpackChunkName: "home" */ '../views/HomeView.vue'),
+      meta: { 
+        preload: true,
+        scrollBehavior: { top: 0, behavior: 'instant' }
+      }
     },
     {
       path: '/about',
       name: 'about',
-      // route level code-splitting
-      // this generates a separate chunk (About.[hash].js) for this route
-      // which is lazy-loaded when the route is visited.
-      component: () => import('../views/AboutView.vue'),
+      component: () => import(/* webpackChunkName: "about" */ '../views/AboutView.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
       path: '/shop',
       name: 'shop',
-      component: ShopView,
+      component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopView.vue'),
+      meta: { 
+        preload: true,
+        scrollBehavior: { top: 0, behavior: 'smooth' }
+      }
     },
     {
-      path: '/shop/:collections_name/:slug',
+      path: '/collections/:slug',
       name: 'collections',
-      component: Collections,
+      component: () => import(/* webpackChunkName: "collections" */ '@/views/Collections.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
       path: '/shop/product/:slug',
       name: 'product-detail',
-      component: ProductDetailView,
+      component: () => import(/* webpackChunkName: "product" */ '@/views/ProductDetailView.vue'),
+      meta: { 
+        preload: true,
+        scrollBehavior: { top: 0, behavior: 'smooth' }
+      }
     },
     {
       path: '/cart',
       name: 'cart',
-      component: CartView,
+      component: () => import(/* webpackChunkName: "cart" */ '@/views/CartView.vue'),
+      meta: { 
+        noScroll: true,
+        transition: 'slide-up' 
+      }
     },
     {
       path: '/track-order',
       name: 'track-order',
-      component: TrackingView,
+      component: () => import(/* webpackChunkName: "tracking" */ '@/views/TrackingView.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
       path: '/checkout',
       name: 'checkout',
-      component: CheckoutView,
+      component: () => import(/* webpackChunkName: "checkout" */ '@/views/CheckoutView.vue'),
+      meta: { 
+        preload: true,
+        scrollBehavior: { top: 0, behavior: 'instant' },
+      }
     },
     {
       path: '/payment-success/:id',
       name: 'payment-success',
-      component: PaymentSuccess,
+      component: () => import(/* webpackChunkName: "payment" */ '@/views/PaymentSuccess.vue'),
+      meta: { 
+        noScroll: true,
+        transition: 'fade' 
+      }
     },
     {
       path: '/payment-failed',
       name: 'payment-failed',
-      component: PaymentFailed,
+      component: () => import(/* webpackChunkName: "payment" */ '@/views/PaymentFailed.vue'),
+      meta: { 
+        noScroll: true,
+        transition: 'fade' 
+      }
     },
     {
       path: '/blog',
       name: 'blog',
-      component: BlogView,
+      component: () => import(/* webpackChunkName: "blog" */ '@/views/BlogView.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
       path: '/analytics',
       name: 'analytics',
-      component: AnalyticsView,
+      component: () => import(/* webpackChunkName: "analytics" */ '@/views/AnalyticsView.vue'),
+      meta: { 
+        scrollBehavior: { top: 0, behavior: 'instant' }
+      }
     },
     {
       path: '/search',
       name: 'search',
-      component: SearchView,
+      component: () => import(/* webpackChunkName: "search" */ '@/views/SearchView.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'instant' },
+      hideNavigation: true // Add this custom meta field
+
+    }
     },
     {
       path: '/admin/login',
       name: 'login',
-      component: LoginView,
+      component: () => import(/* webpackChunkName: "auth" */ '@/views/LoginView.vue'),
+      meta: { 
+        requiresAuth: false,
+        hideForAuth: true
+      }
     },
+    {
+      path: '/admin/add-product',
+      name: 'add-product',
+
+      component: () => import(/* webpackChunkName: "addproduct" */ '@/views/AddProduct.vue'),
+      meta: { 
+        requiresAuth: false,
+      }
+    },
+    {
+      path: '/shipping-policy',
+      name: 'shipping-policy',
+      component: () => import(/* webpackChunkName: "policy" */ '@/views/ShippingPolicy.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
+    },
+    {
+      path: '/:pathMatch(.*)*',
+      name: 'not-found',
+      component: () => import(/* webpackChunkName: "error" */ '@/views/NotFound.vue'),
+      meta: { 
+        scrollBehavior: { top: 0, behavior: 'instant' },
+        layout: 'error'
+      }
+    }
   ],
   
-  // Add scrollBehavior function to handle scroll position
   scrollBehavior(to, from, savedPosition) {
-    // If there's a saved position (when using back/forward navigation)
-    if (savedPosition) {
-      return savedPosition;
-    }
-    
-    // For all other navigations, scroll to top
-    return { top: 0 };
+    return new Promise((resolve) => {
+      // Route-specific override
+      if (to.meta?.scrollBehavior) {
+        return resolve(to.meta.scrollBehavior)
+      }
+
+      // No-scroll routes
+      if (to.meta?.noScroll) {
+        return resolve(false)
+      }
+
+      // Anchor links
+      if (to.hash) {
+        setTimeout(() => {
+          const el = document.querySelector(to.hash)
+          if (el) {
+            const headerHeight = document.querySelector('header')?.offsetHeight || 0
+            const y = el.getBoundingClientRect().top + window.scrollY - headerHeight
+            resolve({ top: y, behavior: 'smooth' })
+          }
+          resolve({ top: 0, behavior: 'smooth' })
+        }, 600)
+        return
+      }
+
+      // Back/forward navigation
+      if (savedPosition) {
+        setTimeout(() => resolve(savedPosition), 50)
+        return
+      }
+
+      // Default behavior
+      setTimeout(() => {
+        resolve({ 
+          top: 0, 
+          behavior: to.meta?.scrollBehavior?.behavior || 'smooth' 
+        })
+      }, 150)
+    })
   }
 })
+
+// Unified route guard
+router.beforeEach(async (to, from, next) => {
+  const userStore = useUserStore()
+  
+  // Initialize the store if not already done
+  if (!userStore.initialized) {
+    await userStore.initStore()
+  }
+
+  // Preload marked routes
+  if (to.meta?.preload) {
+    to.matched.forEach(record => {
+      const component = record.components?.default
+      if (typeof component === 'function' && !preloadedComponents.has(component)) {
+        preloadedComponents.add(component)
+        component()
+      }
+    })
+  }
+
+  // Check authentication status
+  const isAuthenticated = userStore.isAuthenticated
+
+  // Redirect to login if auth required but not authenticated
+  if (to.meta.requiresAuth && !isAuthenticated) {
+    return next({
+      name: 'login',
+      query: { redirect: to.fullPath }
+    })
+  }
+
+  // Redirect away from login if already authenticated
+  if (to.meta.hideForAuth && isAuthenticated) {
+    return next(to.query.redirect || '/analytics')
+  }
+
+
+  // Handle 404
+  if (!to.matched.length) {
+    return next({ name: 'not-found' })
+  }
+
+  next()
+})
+
 
 export default router
