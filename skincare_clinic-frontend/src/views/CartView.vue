@@ -13,7 +13,7 @@
       <div v-if="cartStore.items.length === 0" class="text-center py-16">
         <p class="text-[#4a6b5d] mb-6">Your cart is currently empty</p>
         <router-link 
-          to="/shop" 
+          to="/products" 
           class="inline-block bg-[#0a5c3e] hover:bg-[#0b4a33] text-white py-2 sm:py-3 px-6 sm:px-8 rounded-none transition-colors duration-200 text-sm sm:text-base"
         >
           CONTINUE SHOPPING

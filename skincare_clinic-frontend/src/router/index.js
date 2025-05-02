@@ -24,7 +24,7 @@ const router = createRouter({
       meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
-      path: '/shop',
+      path: '/products',
       name: 'shop',
       component: () => import(/* webpackChunkName: "shop" */ '@/views/ShopView.vue'),
       meta: { 
@@ -39,7 +39,7 @@ const router = createRouter({
       meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
-      path: '/shop/product/:slug',
+      path: '/products/:slug',
       name: 'product-detail',
       component: () => import(/* webpackChunkName: "product" */ '@/views/ProductDetailView.vue'),
       meta: { 
@@ -96,7 +96,7 @@ const router = createRouter({
       meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
-      path: '/shop/admin/analytics/2015',
+      path: '/admin/analytics/2015',
       name: 'analytics',
       component: () => import(/* webpackChunkName: "analytics" */ '@/views/AnalyticsView.vue'),
       meta: { 
@@ -114,7 +114,7 @@ const router = createRouter({
     }
     },
     {
-      path: '/shop/admin/login/2015',
+      path: '/admin/login/2015',
       name: 'login',
       component: () => import(/* webpackChunkName: "auth" */ '@/views/LoginView.vue'),
       meta: { 
@@ -123,7 +123,7 @@ const router = createRouter({
       }
     },
     {
-      path: '/shop/admin/product/2015',
+      path: '/admin/product/2015',
       name: 'add-product',
 
       component: () => import(/* webpackChunkName: "addproduct" */ '@/views/AddProduct.vue'),

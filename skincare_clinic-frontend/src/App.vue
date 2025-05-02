@@ -8,7 +8,7 @@
         </RouterLink>
         
         <nav class="hidden gap-4 lg:flex lg:gap-6">
-          <RouterLink to="/shop" class="text-base font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">Shop</RouterLink>
+          <RouterLink to="/products" class="text-base font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">Shop</RouterLink>
           <RouterLink to="/track-order" class="text-base font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">Track Order</RouterLink>
           <RouterLink to="/about" class="text-base font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">About</RouterLink>
           <RouterLink v-if="!isAuthenticated" to="/blog" class="text-base font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">Blog</RouterLink>
@@ -16,7 +16,7 @@
         </nav>
         
         <nav class="hidden gap-3 md:flex lg:hidden">
-          <RouterLink to="/shop" class="text-sm font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">Shop</RouterLink>
+          <RouterLink to="/products" class="text-sm font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">Shop</RouterLink>
           <RouterLink to="/track-order" class="text-sm font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">Track</RouterLink>
           <RouterLink to="/about" class="text-sm font-medium tracking-wide text-[#1c3a2e] hover:text-[#0a5c3e]">About</RouterLink>
         </nav>
@@ -60,7 +60,7 @@
             <!-- Shop Column -->
             <div class="flex flex-col space-y-2">
               <h3 class="text-sm font-medium text-[#1c3a2e] h-6">Shop</h3>
-              <RouterLink to="/shop" class="flex items-center text-[#4a6b5d] hover:text-[#0a5c3e] h-6">
+              <RouterLink to="/products" class="flex items-center text-[#4a6b5d] hover:text-[#0a5c3e] h-6">
                 <ShoppingBag class="h-4 w-4 mr-2 flex-shrink-0" />
                 <span class="text-sm">All Products</span>
               </RouterLink>
@@ -150,7 +150,7 @@ const cartItemCount = computed(() => cartStore.totalItems || 0)
 
 const logout = () => {
   userStore.removeToken()
-  router.push('/shop')
+  router.push('/products')
 }
 
 onMounted(() => {

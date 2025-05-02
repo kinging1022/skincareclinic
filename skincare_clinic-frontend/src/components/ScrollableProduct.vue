@@ -82,7 +82,7 @@
 
       <div class="mt-8 flex justify-center" v-if="showViewAll">
         <RouterLink 
-          to="/shop" 
+          to="/products" 
           class="rounded-none border border-[#0a5c3e] bg-transparent px-8 text-[#0a5c3e] hover:bg-[#e3efe7] text-base py-6 transition-colors duration-300"
         >
           View All Products

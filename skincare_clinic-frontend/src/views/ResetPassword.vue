@@ -145,7 +145,7 @@
             this.toastStore.showToast(5000, 'Password reset successfully!', "bg-emerald-500");
             
             setTimeout(() => {
-              this.router.push('/shop/admin/login/2015');
+              this.router.push('/admin/login/2015');
             }, 2000);
           } else {
             this.errorMessage = response.data.message || 'Password reset failed';

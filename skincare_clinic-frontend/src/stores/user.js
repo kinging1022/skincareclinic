@@ -7,7 +7,9 @@ export const useUserStore = defineStore("user", {
     isAuthenticated: false,
     access: null,
     refresh: null,
-    initialized: false
+    initialized: false,
+    refreshAttempts: 0,
+    maxRefreshAttempts: 3
   }),
 
   actions: {
@@ -15,13 +17,14 @@ export const useUserStore = defineStore("user", {
       this.isAuthenticated = true
       this.access = data.access
       this.refresh = data.refresh
+      this.refreshAttempts = 0
       this.saveUserToLocalStorage()
       
       // Redirect after login
       if (router.currentRoute.value.query.redirect) {
         router.push(router.currentRoute.value.query.redirect)
       } else {
-        router.push('/analytics')
+        router.push('/admin/analytics/2015')
       }
     },
 
@@ -29,11 +32,12 @@ export const useUserStore = defineStore("user", {
       this.isAuthenticated = false
       this.access = null
       this.refresh = null
+      this.refreshAttempts = 0
       localStorage.removeItem("user")
       
       // Redirect to login when logging out
       if (router.currentRoute.value.meta.requiresAuth) {
-        router.push('/admin/login')
+        router.push('/admin/login/2015')
       }
     },
 
@@ -49,16 +53,27 @@ export const useUserStore = defineStore("user", {
     },
 
     async refreshToken() {
+      // Prevent excessive refresh attempts
+      if (this.refreshAttempts >= this.maxRefreshAttempts) {
+        console.log("Maximum refresh attempts reached. Logging out.")
+        this.removeToken()
+        throw new Error("Maximum refresh attempts reached")
+      }
+
+      this.refreshAttempts++
+      
       try {
         const response = await axios.post("api/token/refresh/", {
           refresh: this.refresh,
         })
         this.access = response.data.access
+        this.refreshAttempts = 0 // Reset counter on success
         this.saveUserToLocalStorage()
         return response.data.access
       } catch (error) {
-        if (error.response?.status === 400) {
-          console.log("Refresh token expired or invalid. Logging out.")
+        console.log("Refresh token failed:", error.response?.status)
+        if (error.response?.status === 400 || error.response?.status === 401) {
+          // Token is invalid or expired
           this.removeToken()
         }
         throw error

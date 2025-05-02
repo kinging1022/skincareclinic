@@ -156,7 +156,7 @@ export default {
             this.formData[key] = "";
           });
 
-          this.$router.push('/shop/admin/analytics/2015');
+          this.$router.push('/admin/analytics/2015');
           this.toastStore.showToast(5000, 'Welcome boss', "bg-emerald-500");
 
         } catch (error) {

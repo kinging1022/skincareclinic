@@ -45,7 +45,7 @@
           
           <div class="flex flex-col sm:flex-row gap-4">
             <RouterLink 
-              to="/shop" 
+              to="/products" 
               class="inline-flex items-center justify-center rounded-none bg-[#e3efe7] backdrop-blur-sm px-8 text-[#0a5c3e] hover:bg-white text-base py-4 transition-all duration-300 group shadow-lg"
               aria-label="Shop our collection"
             >

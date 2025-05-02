@@ -10,7 +10,7 @@
           Authentic products from global brands with expert guidance for every skin type
         </p>
         <RouterLink 
-          to="/shop" 
+          to="/products" 
           class="rounded-none bg-white/20 hover:bg-white/30 px-8 py-3 text-sm backdrop-blur-sm border border-white/30 transition-all font-medium"
           aria-label="Browse all skincare products"
         >
@@ -149,7 +149,7 @@
           </p>
           <div class="flex flex-col sm:flex-row justify-center gap-4">
             <RouterLink 
-              to="/shop" 
+              to="/products" 
               class="inline-block rounded-none bg-[#0a5c3e] hover:bg-[#0b4a33] text-base text-white px-8 py-3 transition-colors"
             >
               Shop Now

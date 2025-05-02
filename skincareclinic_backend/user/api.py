@@ -8,9 +8,7 @@ from rest_framework.permissions import AllowAny, IsAuthenticated
 from rest_framework import status
 from django.contrib.auth.models import User
 from rest_framework_simplejwt.views import TokenObtainPairView
-from django.contrib.auth.hashers import check_password
 from django.core.mail import send_mail
-import uuid
 
 class CustomTokenObtainPairView(TokenObtainPairView):
 
