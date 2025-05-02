@@ -5,18 +5,16 @@ import { createPinia } from 'pinia'
 import { useUserStore } from './stores/user'
 import App from './App.vue'
 import router from './router'
-import VueConfetti from 'vue-confetti';
 
 
 import axios from 'axios'
 
-axios.defaults.baseURL = "http://127.0.0.1:8000";
+axios.defaults.baseURL = import.meta.env.VITE_API_URL;
 
 
 const app = createApp(App)
 
 app.use(createPinia())
-app.use(VueConfetti);
 app.use(router,axios)
 
 // Initialize the store
@@ -49,7 +47,7 @@ axios.interceptors.request.use(
         } catch (error) {
           userStore.removeToken();
           alert('Your session has expired. Please log in again.');
-          router.push('/admin/login');
+          router.push('/shop/admin/login');
         }
       }
       return Promise.reject(error);

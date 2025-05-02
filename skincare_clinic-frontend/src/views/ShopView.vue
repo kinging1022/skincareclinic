@@ -5,7 +5,7 @@
       <div 
         class="py-12 relative z-10 text-white"
         :style="{
-          backgroundImage: 'linear-gradient(rgba(10, 60, 40, 0.65), rgba(10, 60, 40, 0.65)), url(' + bannerBgImage + ')'
+          backgroundImage: 'linear-gradient(rgba(10, 60, 40, 0.65), rgba(10, 60, 40, 0.65))'
         }"
       >
         <div class="container mx-auto px-4 text-center">
@@ -24,16 +24,8 @@
           <div class="flex items-center gap-3 sm:ml-auto">
             <div class="hidden md:block h-10 w-[1px] bg-[#d7e5dc]"></div>
             <div class="flex items-center">
-              <span class="text-[#1c3a2e] text-sm md:text-base font-light italic mr-2">Refine your selection</span>
-              <button 
-                class="rounded-full border border-[#d7e5dc] hover:bg-[#e3efe7] hover:border-[#0a5c3e] p-2 transition-all duration-300 group"
-                @click="toggleFilters"
-              >
-                <filter-icon class="h-4 w-4 text-[#1c3a2e] group-hover:text-[#0a5c3e]" />
-              </button>
-              <span class="ml-2 text-[#0a5c3e] text-sm font-medium">
-                {{ showFilters ? 'Hide' : 'Show' }} Filters
-              </span>
+              <span class="text-[#1c3a2e] text-sm md:text-base font-light italic mr-2"> Use the filters to refine your selection</span>
+              
             </div>
           </div>
         </div>
@@ -275,7 +267,6 @@ const showFilters = ref(true)
 const currentPage = ref(1)
 const itemsPerPage = ref(12)
 const sortBy = ref('featured')
-const bannerBgImage = ref('https://via.placeholder.com/1920x1080/0a5c3e/ffffff?text=Skincare+Hero+Image')
 
 const filters = ref({
   brand: '',

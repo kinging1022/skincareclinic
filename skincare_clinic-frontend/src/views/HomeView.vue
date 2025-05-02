@@ -25,18 +25,14 @@
     </div>
 
     <!-- Hero Section -->
-    <section class="relative min-h-[80vh] flex items-center overflow-hidden">
+    <section class="relative min-h-[80vh] flex items-center overflow-hidden bg-[#0a5c3e]">
       <div class="absolute inset-0 bg-[#0a5c3e]/80 md:bg-[#0a5c3e]/50 z-10"></div>
       <div class="absolute inset-0 bg-gradient-to-b md:bg-gradient-to-r from-[#0a5c3e]/90 via-[#0a5c3e]/70 to-transparent z-10"></div>
-      
-      <div class="absolute inset-0 bg-cover bg-center" 
-           style="background-image: url('/placeholder.svg?height=1080&width=1920');">
-      </div>
       
       <div class="container px-4 md:px-8 relative z-20 text-left md:ml-12 lg:ml-24">
         <div class="max-w-xl">
           <span class="inline-block mb-4 text-sm tracking-widest uppercase text-[#e3efe7] font-light">
-            Premium Skincare Collection
+            Healthy Skincare Collection
           </span>
           
           <h1 class="hero-title mb-6 tracking-wide text-white font-extralight">
@@ -106,25 +102,98 @@
       />
     </template>
 
-    <!-- Benefits Section -->
+    <!-- About Us Section -->
     <section class="py-16 bg-[#f0f5f1]">
       <div class="container px-4 md:px-6">
-        <div class="grid grid-cols-1 gap-8 md:grid-cols-3">
-          <div
-            v-for="(benefit, index) in benefits"
-            :key="'benefit-' + index"
-            class="flex flex-col items-center text-center min-h-[200px]"
-          >
-            <div class="mb-4 h-16 w-16 min-w-[64px] rounded-full border border-[#d7e5dc] bg-white p-4">
-              <component :is="benefit.icon" class="h-full w-full text-[#0a5c3e]" />
+        <div class="max-w-4xl mx-auto text-center mb-12">
+          <h2 class="text-3xl font-light tracking-wider text-[#1c3a2e] mb-6">
+            THE SKINCARÈ EXPERIENCE
+          </h2>
+          <div class="w-24 h-px bg-[#0a5c3e]/30 mx-auto mb-8"></div>
+        </div>
+
+        <div class="grid grid-cols-1 gap-12 md:grid-cols-2">
+          <!-- Our Story -->
+          <div class="flex flex-col items-center text-center">
+            <div class="mb-6 h-20 w-20 min-w-[80px] rounded-full border border-[#d7e5dc] bg-white p-4 flex items-center justify-center">
+              <Leaf class="h-10 w-10 text-[#0a5c3e]" />
             </div>
-            <h3 class="mb-2 text-base font-medium text-[#1c3a2e] min-h-[40px] flex items-center justify-center">
-              {{ benefit.title }}
+            <h3 class="mb-4 text-xl font-light tracking-wider text-[#1c3a2e]">
+              Our Philosophy
             </h3>
-            <p class="text-sm text-[#4a6b5d] min-h-[60px] flex items-center">
-              {{ benefit.description }}
+            <p class="text-sm text-[#4a6b5d] leading-relaxed">
+              At The Skincarè Clinic, we believe true beauty begins with healthy skin. 
+              Our skincare boutique brings you meticulously curated 
+              skincare from the world's most trusted brands. Each product is hand-selected 
+              by our team of aestheticians for its purity, efficacy, and commitment to 
+              sustainable beauty.
             </p>
           </div>
+
+          <!-- Our Products -->
+          <div class="flex flex-col items-center text-center">
+            <div class="mb-6 h-20 w-20 min-w-[80px] rounded-full border border-[#d7e5dc] bg-white p-4 flex items-center justify-center">
+              <Heart class="h-10 w-10 text-[#0a5c3e]" />
+            </div>
+            <h3 class="mb-4 text-xl font-light tracking-wider text-[#1c3a2e]">
+              Authentic Excellence
+            </h3>
+            <p class="text-sm text-[#4a6b5d] leading-relaxed">
+              We partner with dermatologist-recommended brands like CeraVe, 
+              La Roche-Posay, and Dermalogica to guarantee authenticity. Every product 
+              in our collection meets our rigorous standards for clinical results without 
+              compromise. Discover why skincare professionals trust us as their source for 
+              premium formulations.
+            </p>
+          </div>
+
+          <!-- Our Location -->
+          <div class="flex flex-col items-center text-center">
+            <div class="mb-6 h-20 w-20 min-w-[80px] rounded-full border border-[#d7e5dc] bg-white p-4 flex items-center justify-center">
+              <Recycle class="h-10 w-10 text-[#0a5c3e]" />
+            </div>
+            <h3 class="mb-4 text-xl font-light tracking-wider text-[#1c3a2e]">
+              Nigeria's Trusted Skincare Shop
+            </h3>
+            <p class="text-sm text-[#4a6b5d] leading-relaxed">
+              The Skincarè Clinic is your go to destination for authentic skincare 
+              for customers in Lagos, Abuja, Ibadan and all over Nigeria. 
+              Our experts is here to guide you through 
+              our extensive range of products, ensuring you find the perfect match for 
+              your unique skin needs. Experience the difference of personalized service 
+              and expert advice.
+            </p>
+          </div>
+
+          <!-- Our Promise -->
+          <div class="flex flex-col items-center text-center">
+            <div class="mb-6 h-20 w-20 min-w-[80px] rounded-full border border-[#d7e5dc] bg-white p-4 flex items-center justify-center">
+              <svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 24 24" fill="none" stroke="currentColor" stroke-width="2" class="h-10 w-10 text-[#0a5c3e]">
+                <path d="M12 2L4 7v10l8 5 8-5V7l-8-5z"></path>
+                <path d="M7.5 4.5l9 5M7.5 19.5l9-5"></path>
+              </svg>
+            </div>
+            <h3 class="mb-4 text-xl font-light tracking-wider text-[#1c3a2e]">
+              The Skincarè Standard
+            </h3>
+            <p class="text-sm text-[#4a6b5d] leading-relaxed">
+              We stand behind every product with our 100% satisfaction guarantee. 
+              we offer affordable and fast shipping across Nigeria.
+              If you are not completely satisfied with your purchase,
+              we will work with you to make it right.
+              Our commitment to quality and customer care is what sets us apart.
+            </p>
+          </div>
+        </div>
+
+        <!-- Signature -->
+        <div class="max-w-md mx-auto mt-16 pt-8 border-t border-[#d7e5dc] text-center">
+          <p class="text-sm text-[#4a6b5d] italic mb-2">
+            "Beautiful skin requires commitment, not miracle."
+          </p>
+          <p class="text-xs text-[#4a6b5d]/80 tracking-widest">
+            — THE SKINCARÈ CLINIC TEAM
+          </p>
         </div>
       </div>
     </section>
@@ -166,6 +235,7 @@
 <script setup>
 import { ref, onMounted, defineAsyncComponent } from 'vue';
 import { useCartStore } from '@/stores/cart';
+import { useToastStore } from '@/stores/toast';
 import { Leaf, Heart, Recycle, ArrowRight as ArrowRightIcon } from 'lucide-vue-next';
 import axios from 'axios';
 
@@ -189,6 +259,7 @@ const ScrollableProducts = defineAsyncComponent({
 });
 
 const cartStore = useCartStore();
+const toastStore = useToastStore();
 const collections = ref([]);
 const newArrivals = ref([]);
 const popularProducts = ref([]);
@@ -203,31 +274,17 @@ const brands = ref([
   "Eucerin", "Dermalogica", "Kiehl's", "Vichy"
 ]);
 
-const benefits = ref([
-  {
-    title: "Natural Ingredients",
-    description: "Ethically sourced botanicals and active ingredients for gentle yet effective results.",
-    icon: Leaf
-  },
-  {
-    title: "Cruelty Free",
-    description: "Products free from harsh chemicals and are committed to ethical beauty practices.",
-    icon: Heart
-  },
-  {
-    title: "Sustainable Packaging",
-    description: "Eco-friendly packaging designed to minimize environmental impact.",
-    icon: Recycle
-  }
-]);
-
 const addToCart = (product) => {
   cartStore.addItem(product);
 };
 
 const subscribeToNewsletter = async () => {
   try {
-    await axios.post('/api/newsletter/subscribe', { email: email.value });
+    if (!email.value) {
+      toastStore.showToast(5000, "Please enter a valid email address", "bg-red-500 text-white");
+      return;
+    }
+    toastStore.showToast(5000, `${email.value} successfully subscribed`, "bg-[#0a5c3e] text-white")
     email.value = '';
   } catch (err) {
     console.error('Subscription error:', err);
@@ -256,37 +313,10 @@ const fetchData = async () => {
   }
 };
 
-const preloadResources = () => {
-  const resources = [
-    { href: '/fonts/your-font.woff2', as: 'font', type: 'font/woff2', crossorigin: true },
-    { href: '/images/hero-bg.webp', as: 'image' }
-  ];
-
-  resources.forEach(resource => {
-    const link = document.createElement('link');
-    link.rel = 'preload';
-    link.as = resource.as;
-    link.href = resource.href;
-    if (resource.type) link.type = resource.type;
-    if (resource.crossorigin) link.crossOrigin = 'anonymous';
-    document.head.appendChild(link);
-  });
-};
-
 onMounted(() => {
   // Inject critical CSS
   const style = document.createElement('style');
   style.textContent = `
-    .hero-title {
-      font-family: 'HeroFont', -apple-system, BlinkMacSystemFont, sans-serif;
-      font-weight: 300;
-      line-height: 1.2;
-      font-size: clamp(2rem, 6vw, 4.5rem);
-      letter-spacing: 0.05em;
-    }
-    .hero-subtitle {
-      font-size: clamp(0.875rem, 2vw, 1.125rem);
-    }
     /* Marquee animation */
     .marquee-container {
       overflow: hidden;
@@ -308,8 +338,6 @@ onMounted(() => {
     }
   `;
   document.head.appendChild(style);
-
-  preloadResources();
   
   if ('requestIdleCallback' in window) {
     requestIdleCallback(fetchData, { timeout: 2000 });
@@ -348,6 +376,11 @@ onMounted(() => {
 /* Hero section enhancements */
 .hero-title {
   text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
+  font-weight: 300;
+  line-height: 1.2;
+  font-size: clamp(2rem, 6vw, 4.5rem);
+  letter-spacing: 0.05em;
 }
 
 /* Mobile-specific contrast improvements */
@@ -358,19 +391,5 @@ onMounted(() => {
   [class*="text-[#e3efe7]"] {
     text-shadow: 0 1px 3px rgba(0, 0, 0, 0.3);
   }
-}
-</style>
-
-<style>
-/* Global critical CSS */
-.hero-title {
-  font-family: 'HeroFont', -apple-system, BlinkMacSystemFont, sans-serif;
-  font-weight: 300;
-  line-height: 1.2;
-  font-size: clamp(2rem, 6vw, 4.5rem);
-  letter-spacing: 0.05em;
-}
-.hero-subtitle {
-  font-size: clamp(0.875rem, 2vw, 1.125rem);
 }
 </style>

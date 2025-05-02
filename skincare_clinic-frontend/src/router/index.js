@@ -96,11 +96,12 @@ const router = createRouter({
       meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
-      path: '/analytics',
+      path: '/shop/admin/analytics/2015',
       name: 'analytics',
       component: () => import(/* webpackChunkName: "analytics" */ '@/views/AnalyticsView.vue'),
       meta: { 
-        scrollBehavior: { top: 0, behavior: 'instant' }
+        scrollBehavior: { top: 0, behavior: 'instant' },
+        requiresAuth:true,
       }
     },
     {
@@ -113,7 +114,7 @@ const router = createRouter({
     }
     },
     {
-      path: '/admin/login',
+      path: '/shop/admin/login/2015',
       name: 'login',
       component: () => import(/* webpackChunkName: "auth" */ '@/views/LoginView.vue'),
       meta: { 
@@ -122,18 +123,24 @@ const router = createRouter({
       }
     },
     {
-      path: '/admin/add-product',
+      path: '/shop/admin/product/2015',
       name: 'add-product',
 
       component: () => import(/* webpackChunkName: "addproduct" */ '@/views/AddProduct.vue'),
       meta: { 
-        requiresAuth: false,
+        requiresAuth:true,
       }
     },
     {
       path: '/shipping-policy',
       name: 'shipping-policy',
       component: () => import(/* webpackChunkName: "policy" */ '@/views/ShippingPolicy.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
+    },
+    {
+      path: '/reset-password/:token',
+      name: 'reset-password',
+      component: () => import(/* webpackChunkName: "policy" */ '@/views/ResetPassword.vue'),
       meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
@@ -223,7 +230,7 @@ router.beforeEach(async (to, from, next) => {
 
   // Redirect away from login if already authenticated
   if (to.meta.hideForAuth && isAuthenticated) {
-    return next(to.query.redirect || '/analytics')
+    return next(to.query.redirect || '/shop/admin/analytics/2015')
   }
 
 

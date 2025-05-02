@@ -5,7 +5,7 @@
       <div 
         class="py-12 relative z-10 text-white"
         :style="{
-          backgroundImage: `linear-gradient(rgba(10, 60, 40, 0.65), rgba(10, 60, 40, 0.65)), url(${bannerBgImage})`
+          backgroundImage: `linear-gradient(rgba(10, 60, 40, 0.65), rgba(10, 60, 40, 0.65))`
         }"
       >
         <div class="container mx-auto px-4 text-center">
@@ -165,7 +165,6 @@ const loading = ref(false);
 const error = ref(null);
 const currentPage = ref(1);
 const itemsPerPage = ref(12);
-const bannerBgImage = ref('https://via.placeholder.com/1920x1080/0a5c3e/ffffff?text=Skincare+Hero+Image');
 
 // Computed properties
 const bannerText = computed(() => route.params.slug.replace(/-/g, ' ').toUpperCase());
