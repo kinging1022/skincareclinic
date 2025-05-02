@@ -13,6 +13,7 @@ lerna-debug.log*
 skincare_clinic-frontend/node_modules
 skincare_clinic-frontend/.DS_Store
 skincare_clinic-frontend/dist
+skincare_clinic-frontend/.env
 skincare_clinic-frontend/dist-ssr
 skincare_clinic-frontend/coverage
 skincare_clinic-frontend/*.local
