@@ -32,15 +32,24 @@
       <div class="container px-4 md:px-8 relative z-20 text-left md:ml-12 lg:ml-24">
         <div class="max-w-xl">
           <span class="inline-block mb-4 text-sm tracking-widest uppercase text-[#e3efe7] font-light">
-            Healthy Skincare Collection
+            Curated Healthy Skincare
           </span>
           
-          <h1 class="hero-title mb-6 tracking-wide text-white font-extralight">
-            THE SKINCARÈ<br><span class="font-light">CLINIC</span>
-          </h1>
+          <!-- New Luxury Brand Name -->
+          <div class="mb-6 group">
+            <div class="overflow-hidden">
+              <h1 class="hero-title text-white font-light tracking-[0.15em] leading-[0.9] transform transition-all duration-500 group-hover:tracking-[0.18em]">
+                <span class="block text-[1.1em] mb-1">OZIMA</span>
+                <span class="block text-[0.85em] font-thin tracking-[0.3em] opacity-90 border-t border-[#e3efe7]/30 pt-2 w-max">
+                  SKIN SHOP
+                </span>
+              </h1>
+            </div>
+            <div class="h-px bg-[#e3efe7]/20 w-0 group-hover:w-full transition-all duration-700 delay-100 mt-3"></div>
+          </div>
           
           <p class="mb-8 text-[#e3efe7] max-w-md leading-relaxed">
-            Discover our curated collections of healthy and authentic skincare products from leading brands worldwide.
+            Discover exquisite skincare curation from the world's most prestigious dermatological brands.
           </p>
           
           <div class="flex flex-col sm:flex-row gap-4">
@@ -107,7 +116,7 @@
       <div class="container px-4 md:px-6">
         <div class="max-w-4xl mx-auto text-center mb-12">
           <h2 class="text-3xl font-light tracking-wider text-[#1c3a2e] mb-6">
-            THE SKINCARÈ EXPERIENCE
+            THE OZIMA EXPERIENCE
           </h2>
           <div class="w-24 h-px bg-[#0a5c3e]/30 mx-auto mb-8"></div>
         </div>
@@ -122,9 +131,9 @@
               Our Philosophy
             </h3>
             <p class="text-sm text-[#4a6b5d] leading-relaxed">
-              At The Skincarè Clinic, we believe true beauty begins with healthy skin. 
-              Our skincare boutique brings you meticulously curated 
-              skincare from the world's most trusted brands. Each product is hand-selected 
+              At Ozima Skin Shop, we believe true beauty begins with healthy skin. 
+              Our authentic skincare boutique brings you meticulously curated 
+              products from the world's most trusted brands. Each item is hand-selected 
               by our team of aestheticians for its purity, efficacy, and commitment to 
               sustainable beauty.
             </p>
@@ -139,11 +148,10 @@
               Authentic Excellence
             </h3>
             <p class="text-sm text-[#4a6b5d] leading-relaxed">
-              We partner with dermatologist-recommended brands like CeraVe, 
-              La Roche-Posay, and Dermalogica to guarantee authenticity. Every product 
-              in our collection meets our rigorous standards for clinical results without 
-              compromise. Discover why skincare professionals trust us as their source for 
-              premium formulations.
+              We partner exclusively with dermatologist-recommended healthy brands to guarantee 
+              authenticity. Every product in our collection meets our rigorous standards for 
+              clinical results without compromise. Discover why skincare professionals trust 
+              us as their source for premium formulations.
             </p>
           </div>
 
@@ -153,15 +161,13 @@
               <Recycle class="h-10 w-10 text-[#0a5c3e]" />
             </div>
             <h3 class="mb-4 text-xl font-light tracking-wider text-[#1c3a2e]">
-              Nigeria's Trusted Skincare Shop
+              Nigeria's Premier Skincare Destination
             </h3>
             <p class="text-sm text-[#4a6b5d] leading-relaxed">
-              The Skincarè Clinic is your go to destination for authentic skincare 
-              for customers in Lagos, Abuja, Ibadan and all over Nigeria. 
-              Our experts is here to guide you through 
-              our extensive range of products, ensuring you find the perfect match for 
-              your unique skin needs. Experience the difference of personalized service 
-              and expert advice.
+              Ozima Skin Shop is your premier destination for healthy skincare in Lagos, Abuja, 
+              Ibadan and across Nigeria. Our experts provide personalized guidance through 
+              our exclusive range of products, ensuring you find the perfect match for your 
+              unique skin needs. Experience white-glove service and expert advice.
             </p>
           </div>
 
@@ -174,14 +180,13 @@
               </svg>
             </div>
             <h3 class="mb-4 text-xl font-light tracking-wider text-[#1c3a2e]">
-              The Skincarè Standard
+              The Ozima Standard
             </h3>
             <p class="text-sm text-[#4a6b5d] leading-relaxed">
               We stand behind every product with our 100% satisfaction guarantee. 
-              we offer affordable and fast shipping across Nigeria.
-              If you are not completely satisfied with your purchase,
-              we will work with you to make it right.
-              Our commitment to quality and customer care is what sets us apart.
+              Enjoy complimentary luxury packaging and expedited shipping across Nigeria.
+              Should any product not meet your expectations, our concierge team will 
+              ensure a seamless resolution.
             </p>
           </div>
         </div>
@@ -189,10 +194,10 @@
         <!-- Signature -->
         <div class="max-w-md mx-auto mt-16 pt-8 border-t border-[#d7e5dc] text-center">
           <p class="text-sm text-[#4a6b5d] italic mb-2">
-            "Beautiful skin requires commitment, not miracle."
+            "Radiant skin begins with uncompromising quality."
           </p>
           <p class="text-xs text-[#4a6b5d]/80 tracking-widest">
-            — THE SKINCARÈ CLINIC TEAM
+            — OZIMA SKIN SHOP
           </p>
         </div>
       </div>
@@ -206,7 +211,7 @@
             Join Our Community
           </h2>
           <p class="mb-6 text-base text-[#4a6b5d] min-h-[60px] flex items-center justify-center">
-            Subscribe to receive exclusive offers, skincare tips, and early access to new products.
+            Subscribe to receive exclusive offers, skincare tips, and early access to new collections.
           </p>
           <form @submit.prevent="subscribeToNewsletter" class="flex">
             <input
@@ -267,15 +272,17 @@ const loading = ref(true);
 const email = ref('');
 const error = ref(null);
 
-// Skincare brands for marquee
+// Luxury skincare brands for marquee
 const brands = ref([
   "CeraVe", "La Roche-Posay", "The Ordinary", "Dr. Rashel", 
   "Olay", "Neutrogena", "Paula's Choice", "Cetaphil",
-  "Eucerin", "Dermalogica", "Kiehl's", "Vichy"
+  "Eucerin", "Dermalogica", "Kiehl's", "Vichy","Face Fact",
+  "Beauty Formula", "Estellin"
 ]);
 
 const addToCart = (product) => {
   cartStore.addItem(product);
+  toastStore.showToast(3000, "Added to cart", "bg-[#0a5c3e] text-white");
 };
 
 const subscribeToNewsletter = async () => {
@@ -336,6 +343,34 @@ onMounted(() => {
         transform: translateX(-50%);
       }
     }
+    
+    /* Hero title animations */
+    .hero-title {
+      font-family: "Cormorant Garamond", "Times New Roman", serif;
+      text-shadow: 0 2px 12px rgba(0, 0, 0, 0.25);
+      letter-spacing: 0.05em;
+      font-weight: 300;
+      line-height: 1;
+      font-size: clamp(2.8rem, 7vw, 5.5rem);
+      transition: all 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    }
+    
+    @supports (background-clip: text) or (-webkit-background-clip: text) {
+      .hero-title:hover span:first-child {
+        background: linear-gradient(90deg, #e3efe7 10%, #d4a373 50%, #e3efe7 90%);
+        background-size: 200% auto;
+        color: transparent;
+        background-clip: text;
+        -webkit-background-clip: text;
+        animation: shine 3s linear infinite;
+      }
+    }
+    
+    @keyframes shine {
+      to {
+        background-position: 200% center;
+      }
+    }
   `;
   document.head.appendChild(style);
   
@@ -371,16 +406,6 @@ onMounted(() => {
 /* Optimize transitions */
 .transform {
   will-change: transform;
-}
-
-/* Hero section enhancements */
-.hero-title {
-  text-shadow: 0 2px 10px rgba(0, 0, 0, 0.2);
-  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Helvetica, Arial, sans-serif;
-  font-weight: 300;
-  line-height: 1.2;
-  font-size: clamp(2rem, 6vw, 4.5rem);
-  letter-spacing: 0.05em;
 }
 
 /* Mobile-specific contrast improvements */

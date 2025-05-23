@@ -96,6 +96,12 @@ const router = createRouter({
       meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
     },
     {
+      path: '/privacy-policy',
+      name: 'privacy-policy',
+      component: () => import(/* webpackChunkName: "policy" */ '@/views/PrivacyPolicy.vue'),
+      meta: { scrollBehavior: { top: 0, behavior: 'smooth' } }
+    },
+    {
       path: '/admin/analytics/2015',
       name: 'analytics',
       component: () => import(/* webpackChunkName: "analytics" */ '@/views/AnalyticsView.vue'),

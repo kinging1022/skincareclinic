@@ -51,14 +51,16 @@ export default defineConfig({
   },
   define: {
     __APP_VERSION__: JSON.stringify(process.env.npm_package_version),
-    __BUILD_TIME__: JSON.stringify(new Date().toISOString())
+    __BUILD_TIME__: JSON.stringify(new Date().toISOString()),
+    __VUE_PROD_DEVTOOLS__: false // Explicitly disable Vue devtools in production
   },
   build: {
     target: 'esnext',
     cssTarget: 'esnext',
     chunkSizeWarningLimit: 1600,
     cssCodeSplit: true,
-    reportCompressedSize: false, // More accurate size reporting
+    sourcemap: false, // Disable sourcemaps in production
+    reportCompressedSize: false,
     rollupOptions: {
       output: {
         manualChunks(id) {

@@ -35,6 +35,8 @@
                         <li>Standard shipping: <strong>3-7 business days</strong> delivery</li>
                         <li>Express shipping with ibadan: <strong>1-2 business days</strong> delivery option available at checkout</li>
                         <li>You will receive a tracking number via email once your order ships</li>
+                        <li>If an item sells out while your payment is processing, fulfillment may be delayed by 2-3 business days while we restock</li>
+
                       </ul>
                     </div>
                   </div>
@@ -75,6 +77,7 @@
                         <li>Orders placed before <strong>12pm WAT</strong> are processed the same business day</li>
                         <li>Orders placed after 12pm or on weekends/holidays will be processed the next business day</li>
                         <li>During peak seasons, processing may take an additional 1-2 business days</li>
+                        <li>If an item sells out while your payment is processing, fulfillment may be delayed by 2-3 business days while we restock</li>
                       </ul>
                     </div>
                   </div>

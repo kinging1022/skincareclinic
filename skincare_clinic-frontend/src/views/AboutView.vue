@@ -4,7 +4,7 @@
     <section class="relative">
       <div class="flex h-[70vh] w-full flex-col items-center justify-center bg-gradient-to-b from-[#0a5c3e] to-[#1c7d56] px-4 text-center text-white">
         <h1 class="mb-4 max-w-3xl text-4xl font-light tracking-wide md:text-5xl lg:text-6xl drop-shadow-sm">
-          The Skincare Clinic - Nigeria's Trusted Skincare Retailer
+          Ozima Skin Shop - Nigeria's Trusted Skincare Retailer
         </h1>
         <p class="mb-8 max-w-md text-base font-light md:text-lg drop-shadow-sm">
           Authentic products from global brands with expert guidance for every skin type
@@ -22,18 +22,18 @@
     <!-- Brand Story Section -->
     <section class="py-16 bg-white">
       <div class="container px-4 md:px-6 mx-auto max-w-4xl">
-        <h2 class="text-3xl font-medium text-[#1c3a2e] mb-6 text-center">About The Skincare Clinic</h2>
+        <h2 class="text-3xl font-medium text-[#1c3a2e] mb-6 text-center">About Ozima Skin Shop</h2>
         
         <div class="prose text-[#4a6b5d]">
           <p class="text-lg mb-6">
-            Welcome to The Skincare Clinic, Nigeria's leading online skincare retail shop dedicated to providing authentic 
+            Welcome to Ozima skin shop, Nigeria's leading online skincare retail shop dedicated to providing authentic 
             skincare products from trusted global brands. We understand that healthy, radiant skin starts with the right 
             products and we're here to help you find them.
           </p>
 
           <h3 class="text-2xl font-medium text-[#1c3a2e] mb-4">Your Destination for Genuine Skincare Brands</h3>
           <p class="mb-6">
-            At The Skincare Clinic, we are committed to offering 100% original skincare products sourced directly from 
+            At Ozima skin shop, we are committed to offering 100% original skincare products sourced directly from 
             reputable manufacturers and authorized distributors. We stock a wide range of dermatologist-recommended brands 
             including:
           </p>
@@ -63,7 +63,7 @@
 
           <h3 class="text-2xl font-medium text-[#1c3a2e] mb-4">A Mission Rooted in Skin Health</h3>
           <p class="mb-6">
-            At The Skincare Clinic, we believe skincare is self-care. Our mission is to empower Nigerians with access to 
+            At Ozima skin shop, we believe skincare is self-care. Our mission is to empower Nigerians with access to 
             affordable, high-quality skincare solutions that actually work. Every product we offer is selected with care, 
             backed by science, and trusted by skin professionals worldwide.
           </p>
@@ -71,7 +71,7 @@
           <div class="bg-[#f0f5f1] p-6 rounded-lg">
             <h4 class="text-xl font-medium text-[#1c3a2e] mb-3">Join Thousands of Happy Customers</h4>
             <p>
-              From Lagos to Abuja, Port Harcourt to Kaduna, thousands of Nigerians trust The Skincare Clinic for their 
+              From Lagos to Abuja, Port Harcourt to Kaduna, thousands of Nigerians trust Ozima skin shop for their 
               daily skincare needs. Join our growing community and enjoy a clearer, brighter, and healthier complexion one 
               product at a time.
             </p>

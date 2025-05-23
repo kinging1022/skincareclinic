@@ -1,10 +1,10 @@
 <template>
   <div class="flex min-h-screen flex-col bg-[#f0f5f1]">
     <!-- Header -->
-    <header  v-if="!$route.meta.hideNavigation" class="sticky top-0 z-50 w-full border-b border-[#d7e5dc] bg-[#f0f5f1] h-16 lg:h-20">
+    <header v-if="!$route.meta.hideNavigation" class="sticky top-0 z-50 w-full border-b border-[#d7e5dc] bg-[#f0f5f1] h-16 lg:h-20">
       <div class="container flex h-full items-center justify-between px-4">
         <RouterLink to="/" class="flex items-center gap-2">
-          <span class="text-lg font-semibold tracking-wider text-[#1c3a2e] lg:text-xl">THE SKINCARÈ CLINIC</span>
+          <span class="text-lg font-semibold tracking-wider text-[#1c3a2e] lg:text-xl">OZIMA SKIN SHOP</span>
         </RouterLink>
         
         <nav class="hidden gap-4 lg:flex lg:gap-6">
@@ -64,6 +64,10 @@
                 <ShoppingBag class="h-4 w-4 mr-2 flex-shrink-0" />
                 <span class="text-sm">All Products</span>
               </RouterLink>
+              <RouterLink to="/privacy-policy" class="flex items-center text-[#4a6b5d] hover:text-[#0a5c3e] h-6">
+                <Lock class="h-4 w-4 mr-2 flex-shrink-0" />
+                <span class="text-sm">Privacy policy</span>
+              </RouterLink>
             </div>
 
             <!-- About Column -->
@@ -110,7 +114,7 @@
           
           <div class="h-10 flex items-center justify-center border-t border-[#d7e5dc] mt-6">
             <p class="text-xs text-[#4a6b5d] text-center">
-              © {{ currentYear }} SKINCARÈ CLINIC. All rights reserved.
+              © {{ currentYear }} OZIMA SKIN SHOP. All rights reserved.
             </p>
           </div>
         </div>
@@ -135,7 +139,8 @@ import {
   PackageCheck,
   Instagram,
   Mail,
-  LogOut
+  LogOut,
+  Lock,
 } from 'lucide-vue-next'
 import Toast from '@/components/Toast.vue'
 
@@ -154,19 +159,14 @@ const logout = () => {
 }
 
 onMounted(() => {
-  // Initialize immediately to prevent layout shifts
   const handleResize = () => {
     isMobile.value = window.innerWidth < 768
   }
   
-  // Run once before render
   handleResize()
-  
-  // Initialize stores
   userStore.initStore()
   cartStore.initializeCart()
   
-  // Optimized event listener with passive flag for better performance
   let resizeTimer
   window.addEventListener('resize', () => {
     clearTimeout(resizeTimer)
@@ -221,45 +221,34 @@ header {
   contain: layout style paint;
 }
 
-/* Advanced CLS prevention for footer */
 .cls-footer {
-  /* Using contain with size for perfect CLS prevention */
   contain: layout style paint;
-  /* Content visibility only when in viewport */
   content-visibility: auto;
-  /* Explicit height reservation based on viewport */
   contain-intrinsic-size: 0 140px;
 }
 
-/* Footer wrapper with fixed dimensions */
 .footer-wrapper {
   padding-top: 1.5rem;
   padding-bottom: 1.5rem;
-  /* Fixed height containers for stability */
   display: flex;
   flex-direction: column;
   gap: 1.5rem;
 }
 
-/* Links container with guaranteed layout */
 .footer-links-container {
   display: grid;
   grid-template-columns: repeat(2, 1fr);
   gap: 1.5rem;
-  /* Explicit grid item sizing */
   grid-auto-rows: minmax(90px, auto);
 }
 
-/* Fixed height footer columns */
 .footer-column {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
-  /* Explicit height to prevent layout shifts */
   height: 100%;
 }
 
-/* Footer heading with fixed dimensions */
 .footer-heading {
   font-size: 0.875rem;
   font-weight: 500;
@@ -269,7 +258,6 @@ header {
   height: 1.25rem;
 }
 
-/* Footer link with stable layout */
 .footer-link {
   display: flex;
   align-items: center;
@@ -284,7 +272,6 @@ header {
   color: #0a5c3e;
 }
 
-/* Footer icon with fixed dimensions */
 .footer-icon {
   height: 1rem;
   width: 1rem;
@@ -297,7 +284,6 @@ header {
   flex-shrink: 0;
 }
 
-/* Footer text with explicit dimensions */
 .footer-text {
   font-size: 0.875rem;
   line-height: 1.25;
@@ -306,14 +292,12 @@ header {
   text-overflow: ellipsis;
 }
 
-/* Connect section with stable layout */
 .footer-connect {
   display: flex;
   flex-direction: column;
   gap: 0.5rem;
 }
 
-/* Social icon with fixed dimensions */
 .social-icon {
   display: flex;
   align-items: center;
@@ -330,7 +314,6 @@ header {
   background-color: #f0f5f1;
 }
 
-/* Copyright container with fixed dimensions */
 .copyright-container {
   border-top: 1px solid #d7e5dc;
   padding-top: 1rem;
@@ -340,7 +323,6 @@ header {
   align-items: center;
 }
 
-/* Copyright text with stable layout */
 .copyright-text {
   font-size: 0.75rem;
   color: #4a6b5d;
@@ -348,7 +330,6 @@ header {
   line-height: 1.5;
 }
 
-/* Responsive adjustments with fixed dimensions */
 @media (min-width: 768px) {
   .cls-footer {
     contain-intrinsic-size: 0 120px;
@@ -370,7 +351,6 @@ header {
   }
 }
 
-/* Additional styles */
 .aspect-ratio-box {
   position: relative;
   width: 100%;
